@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin - BizPro SL</title>
+<style>
+body{font-family:Arial;padding:15px;background:#111;color:#fff;margin:0}
+input,button{padding:14px;width:100%;margin:6px 0;font-size:16px;border-radius:8px;border:none;box-sizing:border-box}
+button{background:#22c55e;color:#000;font-weight:bold;cursor:pointer}
+.card{background:#222;padding:15px;border-radius:10px;margin:10px 0;border-left:4px solid #22c55e}
+code{font-size:20px;color:#22c55e;letter-spacing:2px;word-break:break-all}
+.header{background:#1e293b;padding:15px;border-radius:10px;text-align:center}
+small{color:#94a3b8}
+</style>
+</head>
+<body>
+<div class="header">
+<h2>🔐 BizPro SL - ADMIN ONLY</h2>
+<p>Price: <b>Le 200</b> | Duration: <b>2 Months</b><br>Issa Koroma | Freetown</p>
+</div>
+
+<div class="card">
+<h3>Generate New Code</h3>
+<input id="custName" placeholder="Customer Name e.g. Mohamed Jalloh">
+<input id="custPhone" placeholder="Phone e.g. 076123456 (for 1 per customer check)">
+<button onclick="generate()">💰 GENERATE CODE - Le 200</button>
+<div id="result"></div>
+</div>
+
+<div class="card">
+<h3>📋 Paid Customers (Saved on this phone)</h3>
+<button onclick="showList()" style="background:#334155;color:#fff">Refresh List</button>
+<button onclick="if(confirm('Delete all?')){localStorage.clear();showList();}" style="background:#ef4444;color:#fff">Clear All</button>
+<div id="list"></div>
+</div>
+
+<script>
+function generate(){
+  const name=document.getElementById('custName').value.trim();
+  const phone=document.getElementById('custPhone').value.trim();
+  if(!name){alert("Enter customer name!");return;}
+
+  // Check one code per customer (by phone)
+  let all=JSON.parse(localStorage.getItem('bizpro_customers')||'[]');
+  if(phone && all.find(c=>c.phone===phone)){
+    alert("❌ This phone already has a code! One per customer!");
+    return;
+  }
+
+  // Generate random 4 chars
+  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let rand="";
+  for(let i=0;i<4;i++) rand+=chars.charAt(Math.floor(Math.random()*chars.length));
+
+  // Expiry = today + 60 days (2 months)
+  const expiry=new Date();
+  expiry.setDate(expiry.getDate()+60);
+  const yyyy=expiry.getFullYear();
+  const mm=String(expiry.getMonth()+1).padStart(2,'0');
+  const dd=String(expiry.getDate()).padStart(2,'0');
+  const dateStr=`${yyyy}${mm}${dd}`; // YYYYMMDD
+
+  const code=`BIZPRO-${rand}-${dateStr}`;
+
+  const data={name,phone,code,created:new Date().toLocaleString(),expiry:expiry.toLocaleDateString(),expiryISO:expiry.toISOString(),price:200};
+
+  all.push(data);
+  localStorage.setItem('bizpro_customers',JSON.stringify(all));
+
+  document.getElementById('result').innerHTML=`
+    <div style="margin-top:15px;padding:15px;background:#000;border-radius:8px;text-align:center">
+      <p>Customer: <b>${name}</b></p>
+      <p>CODE (Send to customer):</p>
+      <code>${code}</code><br><br>
+      <button onclick="navigator.clipboard.writeText('${code}');alert('Copied!')">📋 Copy Code</button>
+      <a href="https://wa.me/232${phone.replace(/^0/,'')}?text=Hello ${encodeURIComponent(name)}! Your BizPro SL Code is: ${code} - Valid for 2 months until ${data.expiry}. Price Le 200 paid. Thank you! - Issa Koroma" target="_blank" style="text-decoration:none"><button style="background:#25D366">📱 Send via WhatsApp</button></a>
+      <p><small>Expires: ${data.expiry} | Le 200</small></p>
+    </div>
+  `;
+  showList();
+  document.getElementById('custName').value="";document.getElementById('custPhone').value="";
+}
+
+function showList(){
+  let all=JSON.parse(localStorage.getItem('bizpro_customers')||'[]');
+  if(all.length===0){document.getElementById('list').innerHTML="<p><small>No customers yet</small></p>";return;}
+  document.getElementById('list').innerHTML=all.slice().reverse().map(c=>`
+    <div class="card" style="border-left-color:#f59e0b">
+      <b>${c.name}</b> - ${c.code}<br>
+      <small>Phone: ${c.phone||'N/A'} | Created: ${c.created}<br>Exp: ${c.expiry} | Le ${c.price}</small><br>
+      <button onclick="navigator.clipboard.writeText('${c.code}')" style="padding:6px;background:#334155;color:#fff;width:auto">Copy</button>
+    </div>
+  `).join('');
+}
+showList();
+</script>
+</body>
+</html>
