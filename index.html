@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Business Empire Pro - Issa Company</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0f172a;color:white;padding:10px}
+.top{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px}
+.tab{padding:12px 16px;background:#1e293b;border:none;color:white;border-radius:10px;white-space:nowrap;font-weight:bold}
+.tab.active{background:#22c55e;color:black}
+.card{background:#1e293b;border-radius:15px;padding:15px;margin-bottom:12px}
+input,select{width:100%;padding:12px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;margin-bottom:8px}
+.btn{background:#22c55e;color:black;padding:12px;width:100%;border:none;border-radius:8px;font-weight:bold;font-size:16px}
+.btnBlue{background:#3b82f6;color:white;padding:14px;width:100%;border:none;border-radius:12px;font-weight:bold;font-size:17px;margin-top:15px}
+.btnRed{background:#ef4444;color:white;padding:14px;width:100%;border:none;border-radius:12px;font-weight:bold;font-size:18px;margin-top:20px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th{color:#22c55e;text-align:left;padding:8px;border-bottom:1px solid #334155}
+td{padding:8px;border-bottom:1px solid #1e293b}
+.section-title{font-size:22px;font-weight:bold;margin-top:10px}
+.line{height:2px;background:white;margin:15px 0}
+.warn{font-size:12px;color:#facc15;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="top">
+<button class="tab" onclick="showTab('stock')">Stock</button>
+<button class="tab" onclick="showTab('sales')">Sales</button>
+<button class="tab" onclick="showTab('debt')">Customers Debt</button>
+<button class="tab" onclick="showTab('credit')">Supplier Credit</button>
+<button class="tab" onclick="showTab('expenses')">Expenses</button>
+<button class="tab active" onclick="showTab('report')">Report</button>
+</div>
+
+<!-- STOCK -->
+<div id="stock" class="card" style="display:none">
+<h2>Stock - Add Items</h2>
+<input id="s_item" placeholder="Item e.g. 7 bags rice">
+<input id="s_qty" type="number" placeholder="Quantity">
+<input id="s_price" type="number" placeholder="Price per Qty">
+<button class="btn" onclick="addStock()">Add Stock</button>
+<div id="stockList"></div>
+</div>
+
+<!-- SALES -->
+<div id="sales" class="card" style="display:none">
+<h2>Sales</h2>
+<input id="sale_item" placeholder="Item e.g. 7 bags rice">
+<input id="sale_qty" type="number" placeholder="Qty">
+<input id="sale_amount" type="number" placeholder="Amount Le">
+<input id="sale_date" type="date">
+<button class="btn" onclick="addSale()">Add Sale</button>
+<div id="salesList"></div>
+</div>
+
+<!-- DEBT -->
+<div id="debt" class="card" style="display:none">
+<h2>👤 CUSTOMERS DEBT</h2>
+<input id="d_name" placeholder="Customer Name e.g. Issa koroma">
+<input id="d_item" placeholder="Item e.g. 5 bags rice">
+<input id="d_amount" type="number" placeholder="Amount Le">
+<input id="d_date" type="date">
+<button class="btn" onclick="addDebt()">Add Debt</button>
+<div id="debtList"></div>
+</div>
+
+<!-- CREDIT -->
+<div id="credit" class="card" style="display:none">
+<h2>🏭 SUPPLIER CREDIT</h2>
+<input id="c_name" placeholder="Supplier Name">
+<input id="c_amount" type="number" placeholder="Amount Le">
+<input id="c_date" type="date">
+<button class="btn" onclick="addCredit()">Add Credit</button>
+<div id="creditList"></div>
+</div>
+
+<!-- EXPENSES -->
+<div id="expenses" class="card" style="display:none">
+<h2>💸 EXPENSES</h2>
+<label>Filter by Month:</label>
+<select id="monthFilter" onchange="renderReport()">
+<option value="all">All Months</option>
+<option value="2026-01">January 2026</option><option value="2026-02">February 2026</option><option value="2026-03">March 2026</option><option value="2026-04">April 2026</option><option value="2026-05">May 2026</option><option value="2026-06">June 2026</option><option value="2026-07">July 2026</option><option value="2026-08">August 2026</option><option value="2026-09">September 2026</option><option value="2026-10">October 2026</option><option value="2026-11">November 2026</option><option value="2026-12">December 2026</option>
+<option value="2027-01">January 2027</option><option value="2027-02">February 2027</option><option value="2027-03">March 2027</option><option value="2027-04">April 2027</option><option value="2027-05">May 2027</option><option value="2027-06">June 2027</option><option value="2027-07">July 2027</option><option value="2027-08">August 2027</option><option value="2027-09">September 2027</option><option value="2027-10">October 2027</option><option value="2027-11">November 2027</option><option value="2027-12">December 2027</option>
+<option value="2028-01">January 2028</option><option value="2028-02">February 2028</option><option value="2028-03">March 2028</option><option value="2028-04">April 2028</option><option value="2028-05">May 2028</option><option value="2028-06">June 2028</option><option value="2028-07">July 2028</option><option value="2028-08">August 2028</option><option value="2028-09">September 2028</option><option value="2028-10">October 2028</option><option value="2028-11">November 2028</option><option value="2028-12">December 2028</option>
+</select>
+<input id="e_item" placeholder="Item e.g. Rice">
+<input id="e_amount" type="number" placeholder="Amount">
+<input id="e_date" type="date">
+<button class="btn" onclick="addExpense()">Add Expense</button>
+<div id="expList"></div>
+</div>
+
+<!-- REPORT - LIKE YOUR SCREENSHOT -->
+<div id="report" class="card">
+<table id="reportTable">
+<thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Amount</th></tr></thead>
+<tbody id="reportSales"></tbody>
+</table>
+<div class="line"></div>
+<div class="section-title">👤 CUSTOMERS DEBT - All Records You Wrote</div>
+<div id="reportDebt">No Debt - All your records like Issa koroma 5 bags rice will show here</div>
+<div class="line"></div>
+<div class="section-title">🏭 SUPPLIER CREDIT</div>
+<div id="reportCredit">No Supplier Credit</div>
+<div class="line"></div>
+<div class="section-title">💸 EXPENSES</div>
+<div id="reportExpenses">No Expenses</div>
+
+<button class="btnBlue" onclick="window.print()">🖨️ Print / Save as PDF - All Records</button>
+<div style="border-top:2px dashed #ef4444;margin-top:20px"></div>
+<button class="btnRed" onclick="clearAllData()">🗑️ Clear All Data - Delete Everything</button>
+<p class="warn">⚠️ This will delete all Stock, Sales, Debt like issa koroma, Credit, Expenses! Cannot undo!</p>
+</div>
+
+<script>
+let stock = JSON.parse(localStorage.getItem('b_stock')||'[]');
+let sales = JSON.parse(localStorage.getItem('b_sales')||'[]');
+let debts = JSON.parse(localStorage.getItem('b_debt')||'[]');
+let credits = JSON.parse(localStorage.getItem('b_credit')||'[]');
+let expenses = JSON.parse(localStorage.getItem('b_expenses')||'[]');
+
+function showTab(t){
+document.querySelectorAll('.card').forEach(c=>c.style.display='none');
+document.getElementById(t).style.display='block';
+document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+if(t==='report') renderReport();
+}
+function addStock(){stock.push({item:s_item.value,qty:+s_qty.value,price:+s_price.value});save();renderStock();s_item.value='';}
+function addSale(){sales.push({item:sale_item.value,qty:+sale_qty.value,amount:+sale_amount.value,date:sale_date.value||new Date().toISOString().slice(0,10)});save();renderReport();sale_item.value='';}
+function addDebt(){debts.push({name:d_name.value,item:d_item.value,amount:+d_amount.value,date:d_date.value||new Date().toISOString().slice(0,10)});save();renderReport();}
+function addCredit(){credits.push({name:c_name.value,amount:+c_amount.value,date:c_date.value||new Date().toISOString().slice(0,10)});save();renderReport();}
+function addExpense(){expenses.push({item:e_item.value,amount:+e_amount.value,date:e_date.value||new Date().toISOString().slice(0,10)});save();renderReport();}
+
+function save(){
+localStorage.setItem('b_stock',JSON.stringify(stock));
+localStorage.setItem('b_sales',JSON.stringify(sales));
+localStorage.setItem('b_debt',JSON.stringify(debts));
+localStorage.setItem('b_credit',JSON.stringify(credits));
+localStorage.setItem('b_expenses',JSON.stringify(expenses));
+}
+
+function renderStock(){document.getElementById('stockList').innerHTML=stock.map(s=>`<div>${s.item} - ${s.qty} - Le ${s.price}</div>`).join('');}
+function renderReport(){
+let filter = document.getElementById('monthFilter')?.value || 'all';
+let fSales = filter==='all'?sales:sales.filter(s=>s.date.startsWith(filter));
+let fExp = filter==='all'?expenses:expenses.filter(e=>e.date.startsWith(filter));
+
+document.getElementById('reportSales').innerHTML = fSales.length?fSales.map(s=>`<tr><td>${s.date}</td><td>${s.item}</td><td>${s.qty}</td><td>Le ${s.amount.toLocaleString()}</td></tr>`).join(''):`<tr><td colspan="4">No Sales</td></tr>`;
+document.getElementById('reportDebt').innerHTML = debts.length?debts.map(d=>`<div>${d.date} - ${d.name} - ${d.item} - Le ${d.amount}</div>`).join(''):`No Debt - All your records like Issa koroma 5 bags rice will show here`;
+document.getElementById('reportCredit').innerHTML = credits.length?credits.map(c=>`<div>${c.date} - ${c.name} - Le ${c.amount}</div>`).join(''):`No Supplier Credit`;
+document.getElementById('reportExpenses').innerHTML = fExp.length?fExp.map(e=>`<div>${e.date} - ${e.item} - Le ${e.amount}</div>`).join(''):`No Expenses`;
+}
+
+// *** THIS FIXES YOUR BUG - DELETE EVERYWHERE ***
+function clearAllData(){
+if(confirm("⚠️ Are you sure you want to DELETE EVERYTHING? All Stock, Sales, Dates, Debt, Credit, Expenses will be gone!")){
+// Clear all my keys
+localStorage.removeItem('b_stock');
+localStorage.removeItem('b_sales');
+localStorage.removeItem('b_debt');
+localStorage.removeItem('b_credit');
+localStorage.removeItem('b_expenses');
+// Clear old keys too
+localStorage.removeItem('my_expenses');
+localStorage.removeItem('sales');
+localStorage.removeItem('stock');
+localStorage.removeItem('debt');
+localStorage.removeItem('expenses');
+localStorage.removeItem('business_empire_stock');
+localStorage.removeItem('business_empire_sales');
+localStorage.removeItem('business_empire_debt');
+localStorage.removeItem('business_empire_credit');
+localStorage.removeItem('business_empire_expenses');
+// Nuclear clear
+localStorage.clear();
+stock=[];sales=[];debts=[];credits=[];expenses=[];
+renderReport();
+alert("✅ All data deleted everywhere! Refresh app.");
+location.reload();
+}
+}
+
+renderReport();
+document.querySelectorAll('input[type=date]').forEach(i=>{if(!i.value) i.valueAsDate=new Date();});
+</script>
+</body>
+</html>
