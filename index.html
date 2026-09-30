@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MY BUSINESS - Empire Pro</title>
+<style>
+body{font-family:Arial;background:#e5e7eb;color:#111;padding:0;margin:0}
+.top{background:linear-gradient(90deg,#1e293b,#1e3a8a);color:#fff;padding:18px;border-radius:0 0 20px 20px;display:flex;justify-content:space-between;align-items:center}
+.top h2{margin:0;font-size:20px}.top small{opacity:.8}
+.cards{display:flex;gap:8px;padding:10px}
+.c{background:#fff;border-radius:12px;padding:12px;flex:1;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.c b{font-size:16px}
+.sales{color:#059669}.cost{color:#dc2626}.profit{color:#111}
+.owe{background:#fff;margin:0 10px;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.tabs{display:flex;gap:8px;padding:10px}
+.tab{flex:1;padding:12px;border-radius:12px;border:none;font-weight:bold}
+.tab.active{background:#1e293b;color:#fff}
+.tab.inactive{background:#fff}
+.content{background:#fff;margin:10px;border-radius:16px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+input,select,button{width:100%;padding:14px;margin:6px 0;border-radius:10px;border:1px solid #ddd;font-size:15px;box-sizing:border-box}
+.btn{background:#22c55e;border:none;font-weight:bold}
+.lock{position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+.lockCard{background:#1e293b;color:#fff;padding:20px;border-radius:16px;width:100%;max-width:380px;text-align:center}
+.gear{background:rgba(255,255,255,.2);border:none;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:10000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+.modalBox{background:#fff;color:#111;padding:20px;border-radius:16px;width:100%;max-width:380px}
+.link{color:#2563eb;text-decoration:underline;font-size:13px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN - MONTHLY -->
+<div id="lockScreen" class="lock">
+  <div class="lockCard" id="lockInner">
+    <div id="stepCode">
+      <h2>🔒 MY BUSINESS Locked</h2>
+      <p>Pay <b>Le 200</b> for 1 Month Access</p>
+      <p style="font-size:12px;opacity:.7">Issa Koroma | New England<br>Orange Money: 076...</p>
+      <input id="codeInput" placeholder="Enter Code e.g. BIZPRO-7X2K-20251030">
+      <button onclick="unlockWithCode()" class="btn" style="background:#22c55e">UNLOCK - Le 200</button>
+      <p id="lockMsg" style="color:#f87171"></p>
+    </div>
+    <div id="stepCreatePass" style="display:none">
+      <h2>🔑 Create Password</h2>
+      <p>Code OK! Create your private password</p>
+      <input id="newPass" type="password" placeholder="New password min 4">
+      <input id="confirmPass" type="password" placeholder="Confirm password">
+      <button onclick="setPassword()" class="btn">Save & Enter</button>
+    </div>
+    <div id="stepLoginPass" style="display:none">
+      <h2>🔑 Enter Password</h2>
+      <input id="loginPass" type="password" placeholder="Your password">
+      <button onclick="loginWithPass()" class="btn">Login</button>
+      <p><span class="link" onclick="resetApp()" style="color:#94a3b8">Forgot password? Use new admin code</span></p>
+      <p id="loginMsg" style="color:#f87171"></p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP - LIKE YOUR SCREENSHOT -->
+<div class="top">
+  <div><h2>MY BUSINESS</h2><small>Empire Pro • Paid Edition • <span id="licSmall"></span></small></div>
+  <button class="gear" onclick="openSettings()">⚙️</button>
+</div>
+
+<div class="cards">
+  <div class="c"><small>SALES</small><br><b class="sales" id="salesView">Le 1800</b></div>
+  <div class="c"><small>COST</small><br><b class="cost" id="costView">Le 1200</b></div>
+  <div class="c"><small>PROFIT</small><br><b class="profit" id="profitView">Le 600</b></div>
+</div>
+
+<div class="owe">
+  <div><small>CUSTOMERS OWE YOU</small><br><b id="oweView">Le 0</b></div>
+  <div style="font-size:28px">📒</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active">💰 SALES & COST</button>
+  <button class="tab inactive">📒 CREDIT BOOK</button>
+</div>
+
+<div class="content">
+  <div style="display:flex;gap:8px">
+    <button class="tab inactive" style="border:1px solid #ddd">+ SALES</button>
+    <button class="tab active">- COST</button>
+  </div>
+  <select id="monthSel"><option>September 2026</option><option>October 2026</option><option>November 2026</option></select>
+  <input id="itemName" placeholder="e.g. Sold 10 bags rice">
+  <input id="itemAmount" type="number" placeholder="Amount Le e.g. 600">
+  <select id="typeSel"><option value="sales">Sales</option><option value="cost">Cost</option></select>
+  <button onclick="addSale()" class="btn">Add Transaction</button>
+  <div id="transactions"></div>
+</div>
+
+<!-- SETTINGS MODAL WITH CHANGE PASSWORD -->
+<div id="settingsModal" class="modal">
+  <div class="modalBox">
+    <h3>⚙️ Settings</h3>
+    <p style="font-size:12px">License: <span id="licFull"></span></p>
+    <hr>
+    <h4>Change Password</h4>
+    <input id="oldPass" type="password" placeholder="Old password">
+    <input id="newPass2" type="password" placeholder="New password min 4">
+    <button onclick="changePassword()" class="btn">Update Password</button>
+    <button onclick="logout()" style="background:#ef4444;color:#fff;margin-top:10px">Logout</button>
+    <button onclick="document.getElementById('settingsModal').style.display='none'" style="background:#e5e7eb">Close</button>
+  </div>
+</div>
+
+<script>
+function openSettings(){document.getElementById('settingsModal').style.display='flex';}
+function show(id){document.getElementById('lockScreen').style.display='flex'; ['stepCode','stepCreatePass','stepLoginPass'].forEach(s=>document.getElementById(s).style.display='none'); document.getElementById(id).style.display='block';}
+function hideLock(){document.getElementById('lockScreen').style.display='none';}
+function init(){
+  const code=localStorage.getItem('bizpro_license'), exp=localStorage.getItem('bizpro_expiry'), pass=localStorage.getItem('bizpro_userPass'), logged=sessionStorage.getItem('bizpro_logged');
+  if(!code||!exp){show('stepCode');return;}
+  if(new Date()>new Date(exp)){alert("⏰ Monthly expired! Pay Le 200 again"); localStorage.clear(); sessionStorage.clear(); show('stepCode');return;}
+  document.getElementById('licSmall').innerText=code; document.getElementById('licFull').innerText=code+" | Exp: "+new Date(exp).toLocaleDateString();
+  if(!pass){show('stepCreatePass');return;}
+  if(logged==='yes') hideLock(); else show('stepLoginPass');
+}
+function unlockWithCode(){
+  let e=document.getElementById('codeInput').value.trim().toUpperCase();
+  try{
+    let p=e.split('-'); if(p.length<3||p[0]!='BIZPRO') throw "bad";
+    let d=p[p.length-1]; if(d.length!=8) throw "bad";
+    let ex=new Date(d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6,8)); if(isNaN(ex)) throw "bad";
+    if(new Date()>ex){document.getElementById('lockMsg').innerText="❌ Expired code";return;}
+    localStorage.setItem('bizpro_license',e); localStorage.setItem('bizpro_expiry',ex.toISOString());
+    document.getElementById('licSmall').innerText=e; document.getElementById('licFull').innerText=e+" | Exp: "+ex.toLocaleDateString();
+    if(!localStorage.getItem('bizpro_userPass')) show('stepCreatePass'); else {sessionStorage.setItem('bizpro_logged','yes'); hideLock();}
+  }catch(err){document.getElementById('lockMsg').innerText="❌ Wrong code!"; }
+}
+function setPassword(){
+  let a=document.getElementById('newPass').value, b=document.getElementById('confirmPass').value;
+  if(a.length<4){alert("Min 4 chars");return;} if(a!==b){alert("No match");return;}
+  localStorage.setItem('bizpro_userPass',a); sessionStorage.setItem('bizpro_logged','yes'); hideLock();
+}
+function loginWithPass(){
+  if(document.getElementById('loginPass').value===localStorage.getItem('bizpro_userPass')){sessionStorage.setItem('bizpro_logged','yes'); hideLock();}
+  else document.getElementById('loginMsg').innerText="Wrong password";
+}
+function changePassword(){
+  let o=document.getElementById('oldPass').value, n=document.getElementById('newPass2').value;
+  if(o!==localStorage.getItem('bizpro_userPass')){alert("Old wrong");return;} if(n.length<4){alert("Min 4");return;}
+  localStorage.setItem('bizpro_userPass',n); alert("✅ Password changed!"); document.getElementById('settingsModal').style.display='none';
+}
+function resetApp(){if(confirm("Reset? Need new monthly code")){localStorage.clear();sessionStorage.clear();location.reload();}}
+function logout(){sessionStorage.removeItem('bizpro_logged'); location.reload();}
+
+// BUSINESS LOGIC - YOUR ORIGINAL
+let data=JSON.parse(localStorage.getItem('mybiz_data')||'[]');
+if(data.length===0){data=[{name:"Sold 10 bags rice",amount:1800,type:"sales",date:"Sept 2026"},{name:"Bought rice",amount:1200,type:"cost",date:"Sept 2026"}];}
+function render(){
+  let sales=0,cost=0,html="";
+  data.forEach((s,i)=>{
+    if(s.type==='sales') sales+=s.amount; else cost+=s.amount;
+    html+=`<div style="padding:10px;border-bottom:1px solid #eee;display:flex;justify-content:space-between">${s.name} - Le ${s.amount} <span onclick="delSale(${i})" style="color:red;cursor:pointer">X</span></div>`;
+  });
+  document.getElementById('salesView').innerText="Le "+sales;
+  document.getElementById('costView').innerText="Le "+cost;
+  document.getElementById('profitView').innerText="Le "+(sales-cost);
+  document.getElementById('transactions').innerHTML=html;
+  localStorage.setItem('mybiz_data',JSON.stringify(data));
+}
+function addSale(){
+  let n=document.getElementById('itemName').value, a=parseFloat(document.getElementById('itemAmount').value), t=document.getElementById('typeSel').value;
+  if(!n||!a){alert("Enter name & amount");return;}
+  data.push({name:n,amount:a,type:t,date:new Date().toLocaleDateString()});
+  document.getElementById('itemName').value=""; document.getElementById('itemAmount').value="";
+  render();
+}
+function delSale(i){data.splice(i,1); render();}
+init(); render();
+</script>
+</body>
+</html>
