@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSINESS EMPIRE PRO - Complete Daily</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f2f2f2;padding:10px}
+.header{background:#0f172a;color:#fff;padding:15px;border-radius:12px;text-align:center;margin-bottom:10px}
+.nav{display:flex;gap:5px;overflow:auto;margin-bottom:10px}
+.nav button{flex:1;min-width:60px;padding:10px;border:none;border-radius:8px;background:#fff;font-weight:bold;font-size:12px}
+.nav button.active{background:#16a34a;color:#fff}
+.card{background:#fff;padding:12px;border-radius:10px;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.box{padding:12px;border-radius:10px;color:#fff;text-align:center}
+.box p{font-size:11px}
+.box h3{font-size:15px;margin-top:4px}
+input,select{width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:8px}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:bold;color:#fff;margin-top:6px}
+.btn-green{background:#16a34a}
+.btn-blue{background:#2563eb}
+.btn-red{background:#ef4444}
+.btn-orange{background:#f59e0b}
+.btn-pink{background:#ec4899}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;margin-top:8px}
+th{background:#111;color:#fff;padding:8px;font-size:11px}
+td{padding:8px;border-bottom:1px solid #eee;font-size:12px}
+.reportPaper{background:#fff;padding:15px;border-radius:10px}
+@media print{
+  body *{visibility:hidden}
+  .reportPaper, .reportPaper *{visibility:visible}
+  .reportPaper{position:absolute;left:0;top:0;width:100%}
+  .noPrint{display:none !important}
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h2>GENERAL TRADING COMPANY (SL) LTD</h2>
+<p style="font-size:11px;opacity:.8">BUSINESS EMPIRE PRO - Daily Report System</p>
+</div>
+
+<div class="nav noPrint">
+<button onclick="showTab('dash')" id="btn-dash" class="active">Dash</button>
+<button onclick="showTab('stock')" id="btn-stock">Stock</button>
+<button onclick="showTab('sales')" id="btn-sales">Sales</button>
+<button onclick="showTab('exp')" id="btn-exp">Exp</button>
+<button onclick="showTab('cust')" id="btn-cust">Cust Owe</button>
+<button onclick="showTab('sup')" id="btn-sup">You Owe</button>
+<button onclick="showTab('report')" id="btn-report">Report</button>
+</div>
+
+<div id="tab-dash" class="tab">
+<div class="card noPrint">
+<label><b>Select Day to View Business:</b></label>
+<input type="date" id="dashDate" onchange="renderAll()">
+<div class="grid2" style="margin-top:5px">
+<button class="btn btn-green" onclick="setToday()">Today</button>
+<button class="btn btn-blue" onclick="setAll()">All Days</button>
+</div>
+</div>
+<div class="grid2">
+<div class="box" style="background:#0ea5e9"><p>Total Stock Value (Remaining)</p><h3 id="dashStock">Le 0</h3></div>
+<div class="box" style="background:#16a34a"><p>Total Sales</p><h3 id="dashSales">Le 0</h3><small id="dashSalesLabel" style="font-size:10px"></small></div>
+<div class="box" style="background:#8b5cf6"><p>Gross Profit</p><h3 id="dashProfit">Le 0</h3></div>
+<div class="box" style="background:#f59e0b"><p>NET Profit (Profit - Expenses)</p><h3 id="dashNet">Le 0</h3></div>
+<div class="box" style="background:#ec4899"><p>Customers Owe You</p><h3 id="dashCust">Le 0</h3></div>
+<div class="box" style="background:#ef4444"><p>You Owe Suppliers</p><h3 id="dashSup">Le 0</h3></div>
+</div>
+</div>
+
+<div id="tab-stock" class="tab" style="display:none">
+<div class="card">
+<h4>Add Stock (Same item can have different cost - e go save as new batch)</h4>
+<input id="stItem" placeholder="Item e.g Rice">
+<input id="stQty" type="number" placeholder="Qty e.g 100">
+<input id="stCost" type="number" placeholder="Cost per 1 e.g 500">
+<input id="stSell" type="number" placeholder="Selling per 1 e.g 650">
+<input id="stDate" type="date">
+<button class="btn btn-green" onclick="addStock()">Add Stock</button>
+</div>
+<table id="stockTable"></table>
+</div>
+
+<div id="tab-sales" class="tab" style="display:none">
+<div class="card">
+<select id="saleItem"></select>
+<input id="saleQty" type="number" placeholder="Qty to Sell">
+<input id="saleDate" type="date">
+<button class="btn btn-green" onclick="addSale()">Sell Now</button>
+</div>
+<table id="salesTable"></table>
+</div>
+
+<div id="tab-exp" class="tab" style="display:none">
+<div class="card">
+<input id="expName" placeholder="Expense e.g Transport">
+<input id="expAmt" type="number" placeholder="Amount">
+<input id="expDate" type="date">
+<button class="btn btn-red" onclick="addExp()">Add Expense</button>
+</div>
+<table id="expTable"></table>
+</div>
+
+<div id="tab-cust" class="tab" style="display:none">
+<div class="card">
+<h4>Customer Owe You</h4>
+<input id="custName" placeholder="Customer Name e.g John">
+<input id="custAmt" type="number" placeholder="Amount Owe">
+<input id="custDate" type="date">
+<button class="btn btn-pink" onclick="addCust()">Add Customer Debt</button>
+</div>
+<table id="custTable"></table>
+</div>
+
+<div id="tab-sup" class="tab" style="display:none">
+<div class="card">
+<h4>You Owe Supplier</h4>
+<input id="supName" placeholder="Supplier Name e.g Mohamed">
+<input id="supAmt" type="number" placeholder="Amount You Owe">
+<input id="supDate" type="date">
+<button class="btn btn-orange" onclick="addSup()">Add Supplier Credit</button>
+</div>
+<table id="supTable"></table>
+</div>
+
+<div id="tab-report" class="tab" style="display:none">
+<div class="card noPrint" style="border:2px solid #16a34a">
+<label style="font-weight:bold;color:#16a34a">📅 SELECT DAY TO PRINT - 01/10/2026 Thursday, 02/10/2026 Friday</label>
+<input type="date" id="reportDate" onchange="genDailyReport()">
+<div class="grid3" style="margin-top:8px">
+<button class="btn btn-green" onclick="genDailyReport()">Show That Day Only</button>
+<button class="btn btn-blue" onclick="genAllReport()">All Days Together</button>
+<button class="btn btn-orange" onclick="window.print()">Print PDF</button>
+</div>
+</div>
+<div id="reportPaper" class="reportPaper"></div>
+</div>
+
+<script>
+let stock = JSON.parse(localStorage.getItem('be_stock')||'[]');
+let sales = JSON.parse(localStorage.getItem('be_sales')||'[]');
+let exps = JSON.parse(localStorage.getItem('be_exps')||'[]');
+let custs = JSON.parse(localStorage.getItem('be_cust')||'[]');
+let sups = JSON.parse(localStorage.getItem('be_sup')||'[]');
+
+function save(){
+ localStorage.setItem('be_stock',JSON.stringify(stock));
+ localStorage.setItem('be_sales',JSON.stringify(sales));
+ localStorage.setItem('be_exps',JSON.stringify(exps));
+ localStorage.setItem('be_cust',JSON.stringify(custs));
+ localStorage.setItem('be_sup',JSON.stringify(sups));
+}
+function fmt(n){return 'Le '+Number(n).toLocaleString();}
+function showTab(t){
+ document.querySelectorAll('.tab').forEach(x=>x.style.display='none');
+ document.getElementById('tab-'+t).style.display='block';
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+ document.getElementById('btn-'+t).classList.add('active');
+}
+function setToday(){dashDate.valueAsDate=new Date();renderAll();}
+function setAll(){dashDate.value='';renderAll();}
+
+function addStock(){
+ let item=stItem.value.trim(), qty=parseInt(stQty.value), cost=parseInt(stCost.value), sell=parseInt(stSell.value), date=stDate.value;
+ if(!item||!qty||!cost||!sell||!date){alert('Fill all');return;}
+ stock.push({id:Date.now(),item,qty,cost,sell,date,left:qty});
+ save(); stItem.value=''; stQty.value=''; stCost.value=''; stSell.value=''; renderAll();
+}
+function addSale(){
+ let item=saleItem.value, qty=parseInt(saleQty.value), date=saleDate.value;
+ if(!item||!qty||!date){alert('Fill all');return;}
+ let batch=stock.find(s=>s.item===item && s.left>=qty);
+ if(!batch){alert('Not enough stock');return;}
+ batch.left-=qty;
+ sales.push({id:Date.now(),item,qty,amount:batch.sell*qty,profit:(batch.sell-batch.cost)*qty,date});
+ save(); saleQty.value=''; renderAll();
+}
+function addExp(){
+ let name=expName.value.trim(), amount=parseInt(expAmt.value), date=expDate.value;
+ if(!name||!amount||!date){alert('Fill all');return;}
+ exps.push({id:Date.now(),name,amount,date}); save(); expName.value=''; expAmt.value=''; renderAll();
+}
+function addCust(){
+ let name=custName.value.trim(), amount=parseInt(custAmt.value), date=custDate.value;
+ if(!name||!amount||!date){alert('Fill all');return;}
+ custs.push({id:Date.now(),name,amount,date}); save(); custName.value=''; custAmt.value=''; renderAll();
+}
+function addSup(){
+ let name=supName.value.trim(), amount=parseInt(supAmt.value), date=supDate.value;
+ if(!name||!amount||!date){alert('Fill all');return;}
+ sups.push({id:Date.now(),name,amount,date}); save(); supName.value=''; supAmt.value=''; renderAll();
+}
+
+function renderAll(){
+ if(!dashDate.value) dashDate.valueAsDate=new Date();
+ if(!stDate.value) stDate.valueAsDate=new Date();
+ if(!saleDate.value) saleDate.valueAsDate=new Date();
+ if(!expDate.value) expDate.valueAsDate=new Date();
+ if(!custDate.value) custDate.valueAsDate=new Date();
+ if(!supDate.value) supDate.valueAsDate=new Date();
+ if(!reportDate.value) reportDate.value=dashDate.value;
+
+ let f = dashDate.value;
+ let fsales = f ? sales.filter(s=>s.date===f) : sales;
+ let fexps = f ? exps.filter(s=>s.date===f) : exps;
+ let fcusts = f ? custs.filter(s=>s.date===f) : custs;
+ let fsups = f ? sups.filter(s=>s.date===f) : sups;
+
+ stockTable.innerHTML='<tr><th>Item</th><th>Left/Total</th><th>Date</th></tr>'+stock.slice().reverse().map(s=>`<tr><td>${s.item}</td><td>${s.left}/${s.qty}</td><td>${s.date}</td></tr>`).join('');
+ saleItem.innerHTML=stock.map(s=>`<option value="${s.item}">${s.item} (Left ${s.left})</option>`).join('');
+ salesTable.innerHTML='<tr><th>Item</th><th>Qty</th><th>Amt</th><th>Date</th></tr>'+fsales.slice().reverse().map(s=>`<tr><td>${s.item}</td><td>${s.qty}</td><td>${fmt(s.amount)}</td><td>${s.date}</td></tr>`).join('');
+ expTable.innerHTML='<tr><th>Expense</th><th>Amt</th><th>Date</th></tr>'+fexps.slice().reverse().map(s=>`<tr><td>${s.name}</td><td>${fmt(s.amount)}</td><td>${s.date}</td></tr>`).join('');
+ custTable.innerHTML='<tr><th>Customer</th><th>Owe You</th><th>Date</th></tr>'+fcusts.slice().reverse().map(s=>`<tr><td>${s.name}</td><td>${fmt(s.amount)}</td><td>${s.date}</td></tr>`).join('');
+ supTable.innerHTML='<tr><th>Supplier</th><th>You Owe</th><th>Date</th></tr>'+fsups.slice().reverse().map(s=>`<tr><td>${s.name}</td><td>${fmt(s.amount)}</td><td>${s.date}</td></tr>`).join('');
+
+ let totalSales = fsales.reduce((a,b)=>a+b.amount,0);
+ let totalProfit = fsales.reduce((a,b)=>a+b.profit,0);
+ let totalExps = fexps.reduce((a,b)=>a+b.amount,0);
+ let totalCust = fcusts.reduce((a,b)=>a+b.amount,0);
+ let totalSup = fsups.reduce((a,b)=>a+b.amount,0);
+ let net = totalProfit - totalExps;
+ let stockVal = stock.reduce((a,b)=>a+(b.left*b.sell),0);
+
+ dashStock.innerText=fmt(stockVal);
+ dashSales.innerText=fmt(totalSales);
+ dashSalesLabel.innerText= f ? 'For '+f : 'All Days';
+ dashProfit.innerText=fmt(totalProfit);
+ dashNet.innerText=fmt(net);
+ dashCust.innerText=fmt(totalCust);
+ dashSup.innerText=fmt(totalSup);
+ genDailyReport();
+}
+
+function genDailyReport(){
+ let d = reportDate.value;
+ if(!d) return;
+ let dSales = sales.filter(s=>s.date===d);
+ let dExps = exps.filter(e=>e.date===d);
+ let dCusts = custs.filter(e=>e.date===d);
+ let dSups = sups.filter(e=>e.date===d);
+ let dStock = stock.filter(s=>s.date===d);
+ let totalSales = dSales.reduce((a,b)=>a+b.amount,0);
+ let totalProfit = dSales.reduce((a,b)=>a+b.profit,0);
+ let totalExps = dExps.reduce((a,b)=>a+b.amount,0);
+ let totalCust = dCusts.reduce((a,b)=>a+b.amount,0);
+ let totalSup = dSups.reduce((a,b)=>a+b.amount,0);
+ let net = totalProfit - totalExps;
+ let dayName = new Date(d).toLocaleDateString('en-US',{weekday:'long'});
+ let html=`
+ <h2 style="text-align:center">FULL BUSINESS REPORT</h2>
+ <p style="text-align:center;font-weight:bold;color:#16a34a;font-size:18px">Date: ${d} - ${dayName}</p>
+ <hr style="margin:10px 0">
+ <p><b>Business:</b> GENERAL TRADING COMPANY (SL) LTD</p>
+ <hr style="margin:10px 0">
+ <h3>SUMMARY FOR ${d}</h3>
+ <table>
+ <tr><th>Item</th><th>Amount for ${d}</th></tr>
+ <tr><td>Total Stock Added Today (Cost)</td><td>${fmt(dStock.reduce((a,b)=>a+(b.qty*b.cost),0))}</td></tr>
+ <tr><td>Total Sales Today</td><td>${fmt(totalSales)}</td></tr>
+ <tr><td>Gross Profit Today</td><td>${fmt(totalProfit)}</td></tr>
+ <tr><td>Total Expenses Today</td><td>${fmt(totalExps)}</td></tr>
+ <tr><td style="font-weight:bold;background:#dcfce7">NET PROFIT = Profit - Expenses</td><td style="font-weight:bold;background:#dcfce7">${fmt(net)}</td></tr>
+ <tr><td>Customer Debt Today</td><td>${fmt(totalCust)}</td></tr>
+ <tr><td>Supplier Credit Today</td><td>${fmt(totalSup)}</td></tr>
+ </table>
+ <h4 style="margin-top:10px">Sales for ${d}</h4>
+ <table><tr><th>Item</th><th>Qty</th><th>Amount</th><th>Profit</th></tr>
+ ${dSales.map(s=>`<tr><td>${s.item}</td><td>${s.qty}</td><td>${fmt(s.amount)}</td><td>${fmt(s.profit)}</td></tr>`).join('') || '<tr><td colspan=4>No sales</td></tr>'}
+ </table>
+ <h4 style="margin-top:10px">Expenses for ${d}</h4>
+ <table><tr><th>Expense</th><th>Amount</th></tr>
+ ${dExps.map(e=>`<tr><td>${e.name}</td><td>${fmt(e.amount)}</td></tr>`).join('') || '<tr><td colspan=2>No expenses</td></tr>'}
+ </table>
+ <h4 style="margin-top:10px">Customer Owe for ${d}</h4>
+ <table><tr><th>Customer</th><th>Amount</th></tr>
+ ${dCusts.map(e=>`<tr><td>${e.name}</td><td>${fmt(e.amount)}</td></tr>`).join('') || '<tr><td colspan=2>No debt</td></tr>'}
+ </table>
+ <h4 style="margin-top:10px">You Owe Suppliers for ${d}</h4>
+ <table><tr><th>Supplier</th><th>Amount</th></tr>
+ ${dSups.map(e=>`<tr><td>${e.name}</td><td>${fmt(e.amount)}</td></tr>`).join('') || '<tr><td colspan=2>No credit</td></tr>'}
+ </table>
+ <br>
+ <button class="btn btn-blue noPrint" onclick="window.print()">🖨️ Print / Save PDF for ${d} - ${dayName}</button>
+ `;
+ document.getElementById('reportPaper').innerHTML=html;
+}
+function genAllReport(){
+ let totalSales = sales.reduce((a,b)=>a+b.amount,0);
+ let totalProfit = sales.reduce((a,b)=>a+b.profit,0);
+ let totalExps = exps.reduce((a,b)=>a+b.amount,0);
+ let totalCust = custs.reduce((a,b)=>a+b.amount,0);
+ let totalSup = sups.reduce((a,b)=>a+b.amount,0);
+ let net = totalProfit-totalExps;
+ let html=`<h2 style="text-align:center">FULL BUSINESS REPORT - ALL DAYS</h2>
+ <table><tr><th>Item</th><th>Total</th></tr>
+ <tr><td>Total Sales</td><td>${fmt(totalSales)}</td></tr>
+ <tr><td>Total Expenses</td><td>${fmt(totalExps)}</td></tr>
+ <tr><td>Net Profit</td><td>${fmt(net)}</td></tr>
+ <tr><td>Customers Owe</td><td>${fmt(totalCust)}</td></tr>
+ <tr><td>You Owe</td><td>${fmt(totalSup)}</td></tr>
+ </table><br><button class="btn btn-blue noPrint" onclick="window.print()">Print All</button>`;
+ document.getElementById('reportPaper').innerHTML=html;
+}
+renderAll();
+</script>
+</body>
+</html>
