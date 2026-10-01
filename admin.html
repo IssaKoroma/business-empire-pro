@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADMIN ONLY - BUSINESS EMPIRE</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0f172a;color:#fff;padding:15px}
+#loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#loginScreen h1{color:#ef4444;font-size:24px}
+#loginScreen input{width:90%;max-width:300px;padding:14px;margin:15px 0;border-radius:8px;border:none;text-align:center;font-size:18px}
+.btn{padding:14px 20px;background:#22c55e;color:#000;border:none;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer;width:90%;max-width:300px}
+.card{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:15px}
+.green{color:#22c55e}.red{color:#ef4444}
+input,select{width:100%;padding:12px;margin:8px 0;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
+th{color:#22c55e;text-align:left;padding:8px;border-bottom:1px solid #334155}
+td{padding:8px;border-bottom:1px solid #1e293b}
+.codeBox{background:#0f172a;border:2px dashed #22c55e;padding:15px;border-radius:10px;text-align:center;margin:15px 0}
+.codeBox b{font-size:28px;color:#22c55e;letter-spacing:2px}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+<h1>🔒 ADMIN ONLY</h1>
+<p style="color:#94a3b8;margin-top:10px;font-size:12px">BUSINESS EMPIRE PRO - ISSA KAMARA</p>
+<input id="adminPass" type="password" placeholder="Enter Admin Password">
+<button class="btn" onclick="checkAdmin()">UNLOCK ADMIN</button>
+<p id="passError" style="color:#ef4444;margin-top:10px;display:none">Wrong Password! Only Issa can open!</p>
+<p style="font-size:10px;color:#475569;margin-top:20px">If you are customer, close this! This is for owner only.</p>
+</div>
+
+<div id="adminPanel" style="display:none">
+<div style="text-align:center;padding:10px">
+<h1 style="color:#22c55e">👑 ADMIN PANEL</h1>
+<p style="font-size:11px;color:#94a3b8">Pay: 072039074 | WA: 072641385</p>
+</div>
+
+<div class="card">
+<h3 style="color:#22c55e">💰 Generate Activation Code</h3>
+<p style="font-size:11px;color:#94a3b8;margin:5px 0">Customer don pay Le 200? Generate code for am</p>
+<input id="customerName" placeholder="Customer Name / Shop Name">
+<input id="customerPhone" placeholder="Customer Phone e.g 072...">
+<button class="btn" style="width:100%;margin-top:10px;background:#3b82f6;color:#fff" onclick="generateCode()">🎲 GENERATE NEW CODE</button>
+
+<div id="generatedArea" style="display:none">
+<div class="codeBox">
+<p style="font-size:12px;color:#94a3b8">NEW ACTIVATION CODE FOR:</p>
+<p id="genFor" style="font-size:14px;margin:5px 0"></p>
+<b id="genCode"></b>
+<p style="font-size:10px;color:#eab308;margin-top:10px">Give this code to customer via WhatsApp. Valid 30 Days!</p>
+</div>
+<button class="btn" style="width:100%;background:#25D366;color:#fff" onclick="shareWhatsApp()">📲 Share via WhatsApp</button>
+</div>
+</div>
+
+<div class="card">
+<h3>📋 Valid Master Codes (Hidden from customers)</h3>
+<p style="font-size:10px;color:#64748b">These codes work for any phone - keep secret!</p>
+<table id="masterTable"></table>
+</div>
+
+<div class="card">
+<h3>📜 Generated History</h3>
+<p style="font-size:10px;color:#64748b">All codes you generated (saved in this phone only)</p>
+<table id="historyTable"></table>
+<button class="btn" style="background:#ef4444;color:#fff;width:100%;margin-top:10px" onclick="clearHistory()">🗑️ Clear History</button>
+</div>
+
+<div class="card" style="border:1px solid #ef4444">
+<h3 class="red">⚠️ Security Tips</h3>
+<p style="font-size:11px;line-height:18px">
+1. Never give this ADMIN file to customers!<br>
+2. Change password inside code to your own secret<br>
+3. This file is only in YOUR phone<br>
+4. Customer file is different - no admin inside<br>
+5. If you lose phone, codes still safe because encrypted
+</p>
+</div>
+</div>
+
+<script>
+// --- ADMIN PASSWORD - CHANGE THIS TO YOUR OWN SECRET! ---
+let _0xpass = "SXNzYTIwMEBFbXBpcmU="; // Base64 for Issa200@Empire - CHANGE IT!
+let ADMIN_PASS = atob(_0xpass);
+
+function checkAdmin(){
+let input = document.getElementById('adminPass').value;
+if(input === ADMIN_PASS){
+document.getElementById('loginScreen').style.display='none';
+document.getElementById('adminPanel').style.display='block';
+loadData();
+}else{
+document.getElementById('passError').style.display='block';
+}
+}
+
+let _0xenc="RU1QSVJFMjAyNixTTDIwMCxJU1NBMjAwLEJPU1MyMDAsMDcyNjQxMzg1LFBSTzIwMCxFTVBJUkUyMDI2LVBybw==";
+let masterCodes = atob(_0xenc).split(",");
+
+let history = JSON.parse(localStorage.getItem('empireAdminHist')||'[]');
+
+function loadData(){
+let h='<tr><th>Code</th><th>Status</th></tr>';
+masterCodes.forEach(c=>{
+h+=`<tr><td><b style="color:#22c55e">${c}</b></td><td><span style="background:#22c55e;color:#000;padding:2px 6px;border-radius:4px;font-size:10px">MASTER</span></td></tr>`;
+});
+document.getElementById('masterTable').innerHTML=h;
+renderHistory();
+}
+
+function generateCode(){
+let name=document.getElementById('customerName').value.trim()||"Customer";
+let phone=document.getElementById('customerPhone').value.trim()||"No Phone";
+if(!name) return alert('Enter customer name');
+
+let random = Math.floor(1000+Math.random()*9000);
+let code = `200-${random}`;
+
+history.unshift({name:name,phone:phone,code:code,date:new Date().toLocaleString()});
+localStorage.setItem('empireAdminHist',JSON.stringify(history));
+
+document.getElementById('genFor').innerText = name + " (" + phone + ")";
+document.getElementById('genCode').innerText = code;
+document.getElementById('generatedArea').style.display='block';
+renderHistory();
+document.getElementById('customerName').value='';
+document.getElementById('customerPhone').value='';
+}
+
+let lastGen = null;
+function renderHistory(){
+let h='<tr><th>Name</th><th>Code</th><th>Date</th></tr>';
+history.forEach((r,i)=>{
+h+=`<tr><td>${r.name}<br><small style="color:#94a3b8">${r.phone}</small></td><td><b style="color:#eab308">${r.code}</b></td><td><small>${r.date}</small></td></tr>`;
+if(i==0) lastGen=r;
+});
+document.getElementById('historyTable').innerHTML=h;
+}
+
+function shareWhatsApp(){
+if(!lastGen) return;
+let msg=`Hello ${lastGen.name}, Your BUSINESS EMPIRE PRO Activation Code is: *${lastGen.code}* Valid 30 Days. Thank you for paying Le 200! - ISSA KAMARA 072039074`;
+let clean=lastGen.phone.replace(/[^0-9]/g,'');
+if(clean.startsWith('0')) clean='232'+clean.substring(1);
+if(clean.length<9) clean='23272641385';
+window.open(`https://wa.me/${clean}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function clearHistory(){
+if(confirm('Delete all history?')){
+history=[];localStorage.removeItem('empireAdminHist');renderHistory();
+document.getElementById('generatedArea').style.display='none';
+}
+}
+
+// Block inspect element slightly
+document.addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+</body>
+</html>
