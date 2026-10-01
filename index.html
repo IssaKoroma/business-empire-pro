@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSINESS EMPIRE PRO</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f2f2f2;padding:10px}
+.header{background:#0f172a;color:#fff;padding:15px;border-radius:12px;text-align:center;margin-bottom:10px}
+.nav{display:flex;gap:4px;overflow:auto;margin-bottom:10px}
+.nav button{flex:1;min-width:55px;padding:10px 5px;border:none;border-radius:8px;background:#fff;font-weight:bold;font-size:11px}
+.nav button.active{background:#16a34a;color:#fff}
+.card{background:#fff;padding:12px;border-radius:10px;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.box{padding:12px;border-radius:10px;color:#fff;text-align:center}
+.box p{font-size:11px} .box h3{font-size:14px;margin-top:4px}
+input,select{width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:8px}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-weight:bold;color:#fff;margin-top:6px;cursor:pointer}
+.btn-green{background:#16a34a} .btn-blue{background:#2563eb} .btn-red{background:#ef4444}
+.btn-orange{background:#f59e0b} .btn-pink{background:#ec4899} .btn-dark{background:#111}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;margin-top:8px}
+th{background:#111;color:#fff;padding:8px;font-size:10px} td{padding:7px;border-bottom:1px solid #eee;font-size:11px}
+.reportPaper{background:#fff;padding:15px;border-radius:10px}
+.paywall{position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:9999;display:flex;align-items:center;justify-content:center;padding:15px}
+.paybox{background:#fff;border-radius:16px;padding:20px;max-width:400px;width:100%;text-align:center}
+@media print{body *{visibility:hidden} .reportPaper, .reportPaper *{visibility:visible} .reportPaper{position:absolute;left:0;top:0;width:100%} .noPrint{display:none !important}}
+</style>
+</head>
+<body>
+<div id="paywall" class="paywall">
+<div class="paybox">
+<h2 style="color:#16a34a">BUSINESS EMPIRE PRO</h2>
+<p style="margin:10px 0;font-weight:bold">Le300 Per Month Subscription</p>
+<div style="background:#fff7ed;padding:10px;border-radius:8px;text-align:left;border:1px dashed #f59e0b">
+<p><b>💳 Pay with Orange Money:</b></p>
+<p style="font-size:20px;font-weight:bold;color:#ef4444">072039074</p>
+<hr style="margin:8px 0">
+<p><b>📱 After Payment, WhatsApp us:</b></p>
+<p style="font-size:18px;font-weight:bold">072641385</p>
+<p style="font-size:11px">Send screenshot + your business name</p>
+</div>
+<div style="margin-top:12px;text-align:left">
+<label>Enter Your Business Name:</label>
+<input id="regBizName" placeholder="e.g My Shop Name (SL) Ltd">
+<label>Your Activation Code (We send after you pay):</label>
+<input id="regCode" placeholder="Enter code e.g EMPIRE-1234">
+<p style="font-size:10px;color:#666">Demo Code: 1234 (30 days free)</p>
+</div>
+<button class="btn btn-green" onclick="activate()">🔓 Unlock - Le300/Month</button>
+<button class="btn btn-blue" onclick="contactWhatsApp()">💬 Chat WhatsApp 072641385</button>
+</div>
+</div>
+
+<div class="header">
+<h2 id="headerBizName">GENERAL TRADING COMPANY (SL) LTD</h2>
+<p style="font-size:11px;opacity:.8">BUSINESS EMPIRE PRO - Daily Report - Le300/Month</p>
+<p id="expiryText" style="font-size:10px;color:#fbbf24"></p>
+</div>
+
+<div class="nav noPrint">
+<button onclick="showTab('dash')" id="btn-dash" class="active">Dash</button>
+<button onclick="showTab('stock')" id="btn-stock">Stock</button>
+<button onclick="showTab('sales')" id="btn-sales">Sales</button>
+<button onclick="showTab('exp')" id="btn-exp">Exp</button>
+<button onclick="showTab('cust')" id="btn-cust">Cust Owe</button>
+<button onclick="showTab('sup')" id="btn-sup">You Owe</button>
+<button onclick="showTab('report')" id="btn-report">Report</button>
+<button onclick="showTab('settings')" id="btn-settings">⚙️ Set</button>
+</div>
+
+<div id="tab-dash" class="tab">
+<div class="card noPrint">
+<label><b>Select Day to View:</b></label>
+<input type="date" id="dashDate" onchange="renderAll()">
+<div class="grid2" style="margin-top:5px"><button class="btn btn-green" onclick="setToday()">Today</button><button class="btn btn-blue" onclick="setAll()">All Days</button></div>
+</div>
+<div class="grid2">
+<div class="box" style="background:#0ea5e9"><p>Stock Value</p><h3 id="dashStock">Le 0</h3></div>
+<div class="box" style="background:#16a34a"><p>Total Sales</p><h3 id="dashSales">Le 0</h3><small id="dashSalesLabel" style="font-size:10px"></small></div>
+<div class="box" style="background:#8b5cf6"><p>Gross Profit</p><h3 id="dashProfit">Le 0</h3></div>
+<div class="box" style="background:#f59e0b"><p>NET Profit</p><h3 id="dashNet">Le 0</h3></div>
+<div class="box" style="background:#ec4899"><p>Customers Owe You</p><h3 id="dashCust">Le 0</h3></div>
+<div class="box" style="background:#ef4444"><p>You Owe Suppliers</p><h3 id="dashSup">Le 0</h3></div>
+</div>
+</div>
+
+<div id="tab-stock" class="tab" style="display:none">
+<div class="card">
+<h4>Add Stock</h4>
+<input id="stItem" placeholder="Item e.g Rice">
+<input id="stQty" type="number" placeholder="Qty">
+<input id="stCost" type="number" placeholder="Cost per 1">
+<input id="stSell" type="number" placeholder="Sell per 1">
+<input id="stDate" type="date">
+<button class="btn btn-green" onclick="addStock()">Add Stock</button>
+</div>
+<table id="stockTable"></table>
+</div>
+
+<div id="tab-sales" class="tab" style="display:none">
+<div class="card">
+<select id="saleItem"></select>
+<input id="saleQty" type="number" placeholder="Qty to Sell">
+<input id="saleDate" type="date">
+<button class="btn btn-green" onclick="addSale()">Sell Now</button>
+</div>
+<table id="salesTable"></table>
+</div>
+
+<div id="tab-exp" class="tab" style="display:none">
+<div class="card">
+<input id="expName" placeholder="Expense e.g Transport">
+<input id="expAmt" type="number" placeholder="Amount">
+<input id="expDate" type="date">
+<button class="btn btn-red" onclick="addExp()">Add Expense</button>
+</div>
+<table id="expTable"></table>
+</div>
+
+<div id="tab-cust" class="tab" style="display:none">
+<div class="card">
+<h4>Customer Owe You - Add Phone & WhatsApp</h4>
+<input id="custName" placeholder="Customer Name e.g John Kamara">
+<input id="custPhone" placeholder="Phone Number e.g 076123456">
+<input id="custWapp" placeholder="WhatsApp Number e.g 076123456">
+<input id="custAmt" type="number" placeholder="Amount Owe Le">
+<input id="custDate" type="date">
+<button class="btn btn-pink" onclick="addCust()">Add Customer Debt</button>
+</div>
+<table id="custTable"></table>
+</div>
+
+<div id="tab-sup" class="tab" style="display:none">
+<div class="card">
+<h4>You Owe Supplier</h4>
+<input id="supName" placeholder="Supplier Name">
+<input id="supAmt" type="number" placeholder="Amount You Owe">
+<input id="supDate" type="date">
+<button class="btn btn-orange" onclick="addSup()">Add Supplier Credit</button>
+</div>
+<table id="supTable"></table>
+</div>
+
+<div id="tab-report" class="tab" style="display:none">
+<div class="card noPrint" style="border:2px solid #16a34a">
+<label style="font-weight:bold;color:#16a34a">📅 SELECT DAY - 01/10/2026 Thursday, 02/10/2026 Friday</label>
+<input type="date" id="reportDate" onchange="genDailyReport()">
+<div class="grid2" style="margin-top:8px"><button class="btn btn-green" onclick="genDailyReport()">Show That Day Only</button><button class="btn btn-blue" onclick="genAllReport()">All Days</button></div>
+<button class="btn btn-dark" onclick="window.print()">🖨️ Print PDF</button>
+</div>
+<div id="reportPaper" class="reportPaper"></div>
+</div>
+
+<div id="tab-settings" class="tab" style="display:none">
+<div class="card">
+<h3>⚙️ Business Settings</h3>
+<label>Your Business Name:</label>
+<input id="setBizName" placeholder="e.g My Super Shop">
+<button class="btn btn-green" onclick="saveSettings()">Save Business Name</button>
+<hr style="margin:10px 0">
+<p id="setExpiry"></p>
+<button class="btn btn-orange" onclick="contactWhatsApp()">Renew - Pay Orange Money 072039074</button>
+<button class="btn btn-red" onclick="logout()">Logout / Lock</button>
+</div>
+</div>
+
+<script>
+let stock = JSON.parse(localStorage.getItem('be_stock')||'[]');
+let sales = JSON.parse(localStorage.getItem('be_sales')||'[]');
+let exps = JSON.parse(localStorage.getItem('be_exps')||'[]');
+let custs = JSON.parse(localStorage.getItem('be_cust_v2')||'[]');
+let sups = JSON.parse(localStorage.getItem('be_sup')||'[]');
+let bizName = localStorage.getItem('be_bizName')||'GENERAL TRADING COMPANY (SL) LTD';
+let expiry = localStorage.getItem('be_expiry')||'';
+function save(){localStorage.setItem('be_stock',JSON.stringify(stock));localStorage.setItem('be_sales',JSON.stringify(sales));localStorage.setItem('be_exps',JSON.stringify(exps));localStorage.setItem('be_cust_v2',JSON.stringify(custs));localStorage.setItem('be_sup',JSON.stringify(sups));}
+function fmt(n){return 'Le '+Number(n).toLocaleString();}
+function showTab(t){document.querySelectorAll('.tab').forEach(x=>x.style.display='none');document.getElementById('tab-'+t).style.display='block';document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));document.getElementById('btn-'+t).classList.add('active');}
+function setToday(){dashDate.valueAsDate=new Date();renderAll();} function setAll(){dashDate.value='';renderAll();}
+function contactWhatsApp(){window.open('https://wa.me/23272641385?text=Hello%20I%20want%20to%20pay%20Le300%20for%20BUSINESS%20EMPIRE%20PRO%20My%20Business%20is:%20'+encodeURIComponent(bizName),'_blank');}
+function checkPaywall(){
+ let now=new Date(); let exp = expiry ? new Date(expiry) : null;
+ if(!exp || now>exp){document.getElementById('paywall').style.display='flex';}
+ else{document.getElementById('paywall').style.display='none';let daysLeft=Math.ceil((exp-now)/(1000*60*60*24));document.getElementById('expiryText').innerText='Active - '+daysLeft+' days left';document.getElementById('setExpiry').innerText='Expires: '+exp.toLocaleDateString()+' ('+daysLeft+' days)';}
+ document.getElementById('headerBizName').innerText=bizName; document.getElementById('setBizName').value=bizName;
+}
+function activate(){
+ let code=document.getElementById('regCode').value.trim(); let bName=document.getElementById('regBizName').value.trim()||bizName;
+ if(!bName){alert('Enter business name');return;}
+ if(code==='1234' || code.startsWith('EMPIRE') || code.length>=4){
+   bizName=bName; localStorage.setItem('be_bizName',bizName); let expDate=new Date(); expDate.setDate(expDate.getDate()+30); localStorage.setItem('be_expiry',expDate.toISOString()); expiry=expDate.toISOString();
+   alert('Activated! '+bizName+' - 30 Days'); checkPaywall(); renderAll();
+ } else {alert('Invalid Code. Pay Le300 to 072039074 then WhatsApp 072641385. Test code 1234');}
+}
+function logout(){localStorage.removeItem('be_expiry');checkPaywall();}
+function saveSettings(){let name=document.getElementById('setBizName').value.trim(); if(name){bizName=name;localStorage.setItem('be_bizName',name);document.getElementById('headerBizName').innerText=name;alert('Saved: '+name);}}
+function addStock(){let item=stItem.value.trim(), qty=parseInt(stQty.value), cost=parseInt(stCost.value), sell=parseInt(stSell.value), date=stDate.value; if(!item||!qty||!cost||!sell||!date){alert('Fill all');return;} stock.push({id:Date.now(),item,qty,cost,sell,date,left:qty}); save(); stItem.value=''; stQty.value=''; stCost.value=''; stSell.value=''; renderAll();}
+function addSale(){let item=saleItem.value, qty=parseInt(saleQty.value), date=saleDate.value; if(!item||!qty||!date){alert('Fill all');return;} let batch=stock.find(s=>s.item===item && s.left>=qty); if(!batch){alert('Not enough stock');return;} batch.left-=qty; sales.push({id:Date.now(),item,qty,amount:batch.sell*qty,profit:(batch.sell-batch.cost)*qty,date}); save(); saleQty.value=''; renderAll();}
+function addExp(){let name=expName.value.trim(), amount=parseInt(expAmt.value), date=expDate.value; if(!name||!amount||!date){alert('Fill all');return;} exps.push({id:Date.now(),name,amount,date}); save(); expName.value=''; expAmt.value=''; renderAll();}
+function addCust(){let name=custName.value.trim(), phone=custPhone.value.trim(), wapp=custWapp.value.trim(), amount=parseInt(custAmt.value), date=custDate.value; if(!name||!amount||!date){alert('Fill Name, Amount, Date');return;} custs.push({id:Date.now(),name,phone,wapp,amount,date}); save(); custName.value=''; custPhone.value=''; custWapp.value=''; custAmt.value=''; renderAll();}
+function addSup(){let name=supName.value.trim(), amount=parseInt(supAmt.value), date=supDate.value; if(!name||!amount||!date){alert('Fill all');return;} sups.push({id:Date.now(),name,amount,date}); save(); supName.value=''; supAmt.value=''; renderAll();}
+function renderAll(){
+ if(!dashDate.value) dashDate.valueAsDate=new Date(); if(!stDate.value) stDate.valueAsDate=new Date(); if(!saleDate.value) saleDate.valueAsDate=new Date(); if(!expDate.value) expDate.valueAsDate=new Date(); if(!custDate.value) custDate.valueAsDate=new Date(); if(!supDate.value) supDate.valueAsDate=new Date(); if(!reportDate.value) reportDate.value=dashDate.value;
+ let f=dashDate.value; let fsales=f?sales.filter(s=>s.date===f):sales; let fexps=f?exps.filter(s=>s.date===f):exps; let fcusts=f?custs.filter(s=>s.date===f):custs; let fsups=f?sups.filter(s=>s.date===f):sups;
+ stockTable.innerHTML='<tr><th>Item</th><th>Left/Total</th><th>Date</th></tr>'+stock.slice().reverse().map(s=>`<tr><td>${s.item}</td><td>${s.left}/${s.qty}</td><td>${s.date}</td></tr>`).join('');
+ saleItem.innerHTML=stock.map(s=>`<option value="${s.item}">${s.item} (Left ${s.left})</option>`).join('');
+ salesTable.innerHTML='<tr><th>Item</th><th>Qty</th><th>Amt</th><th>Date</th></tr>'+fsales.slice().reverse().map(s=>`<tr><td>${s.item}</td><td>${s.qty}</td><td>${fmt(s.amount)}</td><td>${s.date}</td></tr>`).join('');
+ expTable.innerHTML='<tr><th>Expense</th><th>Amt</th><th>Date</th></tr>'+fexps.slice().reverse().map(s=>`<tr><td>${s.name}</td><td>${fmt(s.amount)}</td><td>${s.date}</td></tr>`).join('');
+ let custHtml='<tr><th>Customer</th><th>Phone</th><th>Owe</th><th>Date</th><th>Action</th></tr>';
+ custHtml+=fcusts.slice().reverse().map(s=>{let phoneClean=(s.wapp||s.phone||'').replace(/[^0-9]/g,''); if(phoneClean.startsWith('0')) phoneClean='232'+phoneClean.substring(1); let msg=`Hello ${s.name}, you owe ${fmt(s.amount)} to ${bizName} on ${s.date}. Please pay.`; let waLink=`https://wa.me/${phoneClean}?text=${encodeURIComponent(msg)}`; return `<tr><td>${s.name}</td><td>${s.phone||''}<br><small>${s.wapp||''}</small></td><td>${fmt(s.amount)}</td><td>${s.date}</td><td><a href="${waLink}" target="_blank" style="background:#25D366;color:#fff;padding:5px 8px;border-radius:5px;text-decoration:none;font-size:10px">WhatsApp Reminder</a><br><a href="tel:${s.phone}" style="font-size:10px">Call</a></td></tr>`;}).join('') || '<tr><td colspan=5>No debt</td></tr>';
+ custTable.innerHTML=custHtml;
+ supTable.innerHTML='<tr><th>Supplier</th><th>You Owe</th><th>Date</th></tr>'+fsups.slice().reverse().map(s=>`<tr><td>${s.name}</td><td>${fmt(s.amount)}</td><td>${s.date}</td></tr>`).join('');
+ let totalSales=fsales.reduce((a,b)=>a+b.amount,0); let totalProfit=fsales.reduce((a,b)=>a+b.profit,0); let totalExps=fexps.reduce((a,b)=>a+b.amount,0); let totalCust=fcusts.reduce((a,b)=>a+b.amount,0); let totalSup=fsups.reduce((a,b)=>a+b.amount,0); let net=totalProfit-totalExps; let stockVal=stock.reduce((a,b)=>a+(b.left*b.sell),0);
+ dashStock.innerText=fmt(stockVal); dashSales.innerText=fmt(totalSales); dashSalesLabel.innerText=f?'For '+f:'All Days'; dashProfit.innerText=fmt(totalProfit); dashNet.innerText=fmt(net); dashCust.innerText=fmt(totalCust); dashSup.innerText=fmt(totalSup); genDailyReport();
+}
+function genDailyReport(){
+ let d=reportDate.value; if(!d) return; let dSales=sales.filter(s=>s.date===d); let dExps=exps.filter(e=>e.date===d); let dCusts=custs.filter(e=>e.date===d); let dSups=sups.filter(e=>e.date===d); let dStock=stock.filter(s=>s.date===d);
+ let totalSales=dSales.reduce((a,b)=>a+b.amount,0); let totalProfit=dSales.reduce((a,b)=>a+b.profit,0); let totalExps=dExps.reduce((a,b)=>a+b.amount,0); let totalCust=dCusts.reduce((a,b)=>a+b.amount,0); let totalSup=dSups.reduce((a,b)=>a+b.amount,0); let net=totalProfit-totalExps; let dayName=new Date(d).toLocaleDateString('en-US',{weekday:'long'});
+ let html=`<h2 style="text-align:center">${bizName}</h2><p style="text-align:center;font-weight:bold;color:#16a34a">Date: ${d} - ${dayName}</p><hr><h3>SUMMARY FOR ${d}</h3><table><tr><th>Item</th><th>Amount</th></tr><tr><td>Sales Today</td><td>${fmt(totalSales)}</td></tr><tr><td>Profit</td><td>${fmt(totalProfit)}</td></tr><tr><td>Expenses</td><td>${fmt(totalExps)}</td></tr><tr><td style="font-weight:bold;background:#dcfce7">NET PROFIT</td><td style="font-weight:bold;background:#dcfce7">${fmt(net)}</td></tr><tr><td>Customers Owe</td><td>${fmt(totalCust)}</td></tr><tr><td>You Owe Suppliers</td><td>${fmt(totalSup)}</td></tr></table><h4>Customers Owe - ${d}</h4><table><tr><th>Name</th><th>Phone/WhatsApp</th><th>Amt</th></tr>${dCusts.map(e=>`<tr><td>${e.name}</td><td>${e.phone||''} / ${e.wapp||''}</td><td>${fmt(e.amount)}</td></tr>`).join('')||'<tr><td colspan=3>None</td></tr>'}</table><br><button class="btn btn-blue noPrint" onclick="window.print()">Print ${d}</button>`;
+ document.getElementById('reportPaper').innerHTML=html;
+}
+function genAllReport(){let totalSales=sales.reduce((a,b)=>a+b.amount,0); let totalProfit=sales.reduce((a,b)=>a+b.profit,0); let totalExps=exps.reduce((a,b)=>a+b.amount,0); let totalCust=custs.reduce((a,b)=>a+b.amount,0); let totalSup=sups.reduce((a,b)=>a+b.amount,0); let net=totalProfit-totalExps; let html=`<h2 style="text-align:center">${bizName} - ALL DAYS</h2><table><tr><th>Item</th><th>Total</th></tr><tr><td>Sales</td><td>${fmt(totalSales)}</td></tr><tr><td>Expenses</td><td>${fmt(totalExps)}</td></tr><tr><td>Net Profit</td><td>${fmt(net)}</td></tr><tr><td>Customers Owe</td><td>${fmt(totalCust)}</td></tr><tr><td>You Owe</td><td>${fmt(totalSup)}</td></tr></table><br><button class="btn btn-blue noPrint" onclick="window.print()">Print All</button>`; document.getElementById('reportPaper').innerHTML=html;}
+checkPaywall(); renderAll();
+</script>
+</body>
+</html>
