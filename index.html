@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSINESS EMPIRE PRO</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#0f172a;color:#fff;padding:12px}
+.card{background:#1e293b;border-radius:12px;padding:15px;margin-bottom:12px}
+.btn{padding:12px;background:#22c55e;color:#000;border:none;border-radius:8px;font-weight:bold;width:100%;cursor:pointer}
+input{width:100%;padding:12px;margin:6px 0;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#fff}
+#lockScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.code{font-size:11px;color:#eab308;background:#000;padding:8px;border-radius:6px;margin:8px 0;word-break:break-all}
+.deviceBox{background:#000;border:2px dashed #22c55e;padding:12px;border-radius:10px;margin:10px 0}
+</style></head><body>
+
+<div id="lockScreen">
+<h2 style="color:#22c55e">🔒 BUSINESS EMPIRE PRO</h2>
+<p style="font-size:12px;color:#94a3b8;margin:10px 0">Le 200 - 30 Days</p>
+
+<div class="deviceBox">
+<p style="font-size:11px;color:#94a3b8">YOUR PHONE ID (Send to Issa):</p>
+<b id="myDeviceId" style="font-size:20px;color:#22c55e;letter-spacing:2px">LOADING...</b>
+<p style="font-size:9px;color:#64748b;margin-top:5px">This ID is locked to your phone</p>
+</div>
+
+<p style="font-size:11px;margin:10px 0">Pay to: <b style="color:#22c55e">072039074 / 072641385</b></p>
+<input id="actCode" placeholder="Enter Activation Code e.g SL-A3F9K2-7849">
+<button class="btn" onclick="activate()">✅ ACTIVATE MY PHONE</button>
+<p id="actMsg" style="font-size:12px;margin-top:10px"></p>
+
+<div style="margin-top:15px;font-size:10px;color:#475569;text-align:left;background:#1e293b;padding:10px;border-radius:8px">
+<b style="color:#ef4444">How to Activate:</b><br>
+1. Copy your PHONE ID above<br>
+2. WhatsApp to Issa: 072641385<br>
+3. Pay Le 200<br>
+4. Issa will send code locked to YOUR phone only<br>
+5. Paste code and activate!
+</div>
+</div>
+
+<div style="text-align:center;padding:10px">
+<h1 style="color:#22c55e">👑 BUSINESS EMPIRE PRO</h1>
+<p id="expiryInfo" style="font-size:11px;color:#eab308"></p>
+</div>
+<div class="card"><h3>Dashboard - Phone Locked Version Active ✅</h3><p style="font-size:11px;color:#94a3b8">Your Device: <b id="dashDevice"></b></p></div>
+
+<script>
+// --- TRIPLE LOCK DEVICE ID ---
+function getDeviceId(){
+let id = localStorage.getItem('sl_device_id');
+if(!id){
+ // Generate from phone fingerprint
+ let raw = navigator.userAgent + screen.width + screen.height + new Date().getTimezoneOffset();
+ let hash = 0; for(let i=0;i<raw.length;i++) hash = ((hash<<5)-hash)+raw.charCodeAt(i);
+ let rand = Math.random().toString(36).substring(2,6).toUpperCase();
+ id = "SL-" + Math.abs(hash).toString(36).substring(0,4).toUpperCase() + rand;
+ id = id.substring(0,9); // SL-XXXXXX
+ localStorage.setItem('sl_device_id',id);
+ document.cookie = `sl_device_id=${id};max-age=31536000;path=/`;
+ // IndexedDB backup
+ let req=indexedDB.open('empireDB',1);req.onupgradeneeded=e=>{e.target.result.createObjectStore('lock')};
+ req.onsuccess=e=>{e.target.result.transaction('lock','readwrite').objectStore('lock').put(id,'device')};
+}
+return id;
+}
+let DEVICE_ID = getDeviceId();
+document.getElementById('myDeviceId').innerText=DEVICE_ID;
+document.getElementById('dashDevice').innerText=DEVICE_ID;
+
+// --- SECRET HASH FOR PIN ---
+function makePinForDevice(device){
+ let secret="ISSA2026SECRET_SL_EMPIRE";
+ let str=device+secret;
+ let h=0;for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))%1000000}
+ return (h%9000)+1000; // 4 digit
+}
+
+let _0xenc="RU1QSVJFMjAyNixTTDIwMCxJU1NBMjAwLEJPU1MyMDAsMDcyNjQxMzg1LFBSTzIwMCxFTVBJUkUyMDI2LVBybw==";
+let MASTER = atob(_0xenc).split(",");
+
+function activate(){
+ let code=document.getElementById('actCode').value.trim().toUpperCase();
+ let msg=document.getElementById('actMsg');
+ if(MASTER.includes(code)){
+   saveActivation(code, true); return;
+ }
+ // Check phone-locked code format: SL-XXXXXX-#### 
+ let parts=code.split('-');
+ if(parts.length>=3){
+   let devPart = parts[0]+"-"+parts[1]; // SL-A3F9K2
+   let pinPart = parts[2];
+   if(devPart!==DEVICE_ID){
+     msg.style.color='#ef4444'; msg.innerText='❌ This code is for phone '+devPart+' not your phone '+DEVICE_ID+' ! Cannot share!';
+     return;
+   }
+   let expected = makePinForDevice(DEVICE_ID).toString();
+   if(pinPart===expected){
+     saveActivation(code,false); return;
+   } else {
+     msg.style.color='#ef4444'; msg.innerText='❌ Wrong PIN for your device!'; return;
+   }
+ }
+ msg.style.color='#ef4444'; msg.innerText='❌ Invalid code!';
+}
+
+function saveActivation(code,isMaster){
+ let exp=new Date();exp.setDate(exp.getDate()+30);
+ let data={code:code,exp:exp.getTime(),device:DEVICE_ID,master:isMaster};
+ localStorage.setItem('empire_act_v3',JSON.stringify(data));
+ localStorage.setItem('empire_act_exp',exp.getTime().toString());
+ document.cookie=`empire_act=${code};max-age=2592000;path=/`;
+ document.getElementById('lockScreen').style.display='none';
+ document.getElementById('expiryInfo').innerText='✅ Active till '+exp.toLocaleDateString()+' | Device: '+DEVICE_ID;
+}
+
+(function check(){
+ let saved=JSON.parse(localStorage.getItem('empire_act_v3')||'null');
+ let exp=localStorage.getItem('empire_act_exp');
+ if(saved && exp && Date.now()<parseInt(exp)){
+   if(!saved.master && saved.device!==DEVICE_ID){
+     // Device changed after activation - lock again
+     localStorage.removeItem('empire_act_v3'); return;
+   }
+   document.getElementById('lockScreen').style.display='none';
+   document.getElementById('expiryInfo').innerText='✅ Active till '+new Date(parseInt(exp)).toLocaleDateString()+' | Device: '+saved.device;
+ } else if(saved){
+   document.getElementById('actMsg').innerText='Expired! Pay again Le 200 - Send your Device ID: '+DEVICE_ID;
+ }
+})();
+</script>
+</body></html>
