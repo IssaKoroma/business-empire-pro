@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADMIN - Business Empire</title>
+<style>*{box-sizing:border-box;font-family:Arial}body{background:#0f172a;color:#fff;padding:15px}.card{background:#fff;color:#111;padding:15px;border-radius:12px;margin-bottom:12px} input{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px}.btn{width:100%;padding:12px;border:none;border-radius:8px;font-weight:bold;color:#fff;margin-top:6px;cursor:pointer}.btn-green{background:#16a34a}.btn-blue{background:#2563eb}.codeBox{background:#111;color:#0f0;padding:15px;border-radius:8px;font-family:monospace;word-break:break-all;font-size:14px;margin-top:10px}</style>
+</head><body>
+<h2>🔐 ADMIN - Business Empire PRO</h2>
+<p>Le300/month - One Code = One Phone Only</p>
+<div class="card">
+<h3>Generate Code for Customer</h3>
+<label>Customer's Phone ID:</label>
+<input id="deviceId" placeholder="e.g A7K9-X2P4">
+<label>Customer Business Name:</label>
+<input id="bizName" placeholder="e.g Kamara Shop">
+<label>Customer Phone Number:</label>
+<input id="custPhone" placeholder="e.g 076...">
+<label>Months (1 = Le300):</label>
+<input id="months" type="number" value="1">
+<button class="btn btn-green" onclick="generate()">Generate Activation Code</button>
+<div id="result" style="display:none">
+<p><b>Send this code to customer:</b></p>
+<div class="codeBox" id="activationCode"></div>
+<button class="btn btn-blue" onclick="sendWhatsApp()">📲 Send via WhatsApp</button>
+<p style="font-size:12px;margin-top:8px" id="details"></p>
+</div>
+</div>
+<script>
+const SECRET="BUSINESS_EMPIRE_SL_2026";
+function simpleHash(str){let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h).toString(36).toUpperCase();}
+function generate(){
+ let dev=document.getElementById('deviceId').value.trim().toUpperCase();
+ let biz=document.getElementById('bizName').value.trim();
+ let phone=document.getElementById('custPhone').value.trim();
+ let months=parseInt(document.getElementById('months').value)||1;
+ if(!dev||!biz){alert('Enter Device ID and Business Name');return;}
+ let exp=new Date(); exp.setDate(exp.getDate() + (months*30));
+ let expStr=exp.toISOString().split('T')[0];
+ let payload = dev+"|"+biz+"|"+expStr;
+ let hash = simpleHash(payload+"|"+SECRET);
+ let full = payload+"|"+hash;
+ let activation = btoa(full).replace(/=/g,'').toUpperCase();
+ let readable = activation.match(/.{1,4}/g).join('-');
+ document.getElementById('activationCode').innerText=readable;
+ document.getElementById('details').innerHTML="Device: "+dev+"<br>Business: "+biz+"<br>Expires: "+expStr;
+ document.getElementById('result').style.display='block';
+ window.lastData={dev,biz,phone,expStr,readable};
+}
+function sendWhatsApp(){
+ let d=window.lastData;
+ let msg=`Hello ${d.biz}! Your code is: *${d.readable}* Expires: ${d.expStr} Works ONLY on your phone ID: ${d.dev}. Thanks for paying Le300!`;
+ window.open('https://wa.me/232'+d.phone.replace(/^0/,'')+'?text='+encodeURIComponent(msg),'_blank');
+}
+</script>
+</body></html>
