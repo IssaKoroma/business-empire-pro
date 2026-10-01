@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ADMIN V3 - PHONE LOCK</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#0f172a;color:#fff;padding:15px}
+#login{position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.card{background:#1e293b;border-radius:12px;padding:15px;margin-bottom:12px}
+.btn{padding:12px;background:#22c55e;color:#000;border:none;border-radius:8px;font-weight:bold;width:100%;cursor:pointer}
+input{width:100%;padding:12px;margin:6px 0;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#fff}
+.codeBox{background:#000;border:2px dashed #22c55e;padding:15px;border-radius:10px;text-align:center}
+</style></head><body>
+<div id="login"><h2 style="color:#ef4444">🔒 ADMIN V3</h2><input id="pass" type="password" placeholder="Password" style="width:80%;max-width:300px"><button class="btn" style="width:80%;max-width:300px;margin-top:10px" onclick="unlock()">UNLOCK</button><p id="err" style="color:#ef4444;display:none">Wrong!</p></div>
+
+<div id="panel" style="display:none">
+<h2 style="color:#22c55e;text-align:center">👑 ADMIN V3 - PHONE LOCK</h2>
+<p style="text-align:center;font-size:11px;color:#94a3b8">One Code = One Phone Only!</p>
+
+<div class="card">
+<h3 style="color:#22c55e">Generate Locked Code</h3>
+<input id="cName" placeholder="Customer Name">
+<input id="cDevice" placeholder="Customer Phone ID e.g SL-A3F9K2" style="border:1px solid #22c55e">
+<p style="font-size:10px;color:#eab308">Ask customer to send his PHONE ID from lock screen!</p>
+<button class="btn" style="background:#3b82f6;color:#fff;margin-top:10px" onclick="gen()">🎲 GENERATE LOCKED CODE</button>
+<div id="out" style="display:none"><div class="codeBox"><p id="outName"></p><b id="outCode" style="font-size:26px;color:#22c55e"></b><p style="font-size:10px;color:#94a3b8;margin-top:8px">This code works ONLY on that phone! Cannot share!</p></div><button class="btn" style="background:#25D366;color:#fff;margin-top:10px" onclick="shareWA()">📲 Share via WhatsApp</button></div>
+</div>
+</div>
+
+<script>
+let ADMIN_PASS=atob("SXNzYTIwMEBFbXBpcmU=");
+function unlock(){if(document.getElementById('pass').value===ADMIN_PASS){document.getElementById('login').style.display='none';document.getElementById('panel').style.display='block'}else{document.getElementById('err').style.display='block'}}
+
+function makePinForDevice(device){
+ let secret="ISSA2026SECRET_SL_EMPIRE"; let str=device+secret; let h=0;for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))%1000000} return (h%9000)+1000;
+}
+let last={};
+function gen(){
+ let name=document.getElementById('cName').value||"Customer";
+ let dev=document.getElementById('cDevice').value.trim().toUpperCase();
+ if(!dev.startsWith("SL-")) return alert("Device ID must start with SL- e.g SL-A3F9K2");
+ let pin=makePinForDevice(dev);
+ let code=dev+"-"+pin;
+ last={name:name,device:dev,code:code};
+ document.getElementById('outName').innerText=name+" ("+dev+")";
+ document.getElementById('outCode').innerText=code;
+ document.getElementById('out').style.display='block';
+ let hist=JSON.parse(localStorage.getItem('v3hist')||'[]');hist.unshift({name,device:dev,code,date:new Date().toLocaleString()});localStorage.setItem('v3hist',JSON.stringify(hist));
+}
+function shareWA(){
+ let msg=`Hello ${last.name}, Your code for device ${last.device} is *${last.code}* . This code works ONLY on your phone! Valid 30 Days. - ISSA 072039074`;
+ window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+</script></body></html>
