@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUSINESS EMPIRE PRO - Final</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#f2f2f2;padding:6px}
+.header{background:#0f172a;color:#fff;padding:12px;border-radius:12px;text-align:center;margin-bottom:6px}
+.nav{display:flex;gap:2px;overflow:auto;margin-bottom:6px}.nav button{flex:1;min-width:42px;padding:8px 1px;border:none;border-radius:6px;background:#fff;font-weight:bold;font-size:8px}.nav button.active{background:#16a34a;color:#fff}
+.card{background:#fff;padding:10px;border-radius:10px;margin-bottom:6px}
+input,select{width:100%;padding:10px;margin:3px 0;border:1px solid #ccc;border-radius:7px;font-size:13px}
+.btn{width:100%;padding:11px;border:none;border-radius:7px;font-weight:bold;color:#fff;margin-top:4px;cursor:pointer}
+.btn-green{background:#16a34a}.btn-blue{background:#2563eb}.btn-red{background:#ef4444}.btn-orange{background:#f59e0b}.btn-pink{background:#ec4899}.btn-dark{background:#111}
+.btn-small{padding:4px 6px;font-size:8px;width:auto;margin:1px;border-radius:4px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:6px;overflow:hidden;margin-top:5px}
+th{background:#111;color:#fff;padding:5px;font-size:7.5px}td{padding:5px;border-bottom:1px solid #ddd;font-size:9px;text-align:center;word-break:break-word}
+.editable{background:#fffde7;cursor:pointer;border:1px dashed #f59e0b}
+.paywall{position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:9999;display:flex;align-items:center;justify-content:center;padding:10px;overflow:auto}.paybox{background:#fff;border-radius:14px;padding:14px;max-width:400px;width:100%;text-align:center}.deviceBox{background:#111;color:#0f0;padding:6px;border-radius:6px;font-family:monospace;font-size:12px}
+.reportPaper{background:#fff;padding:12px;border-radius:8px}
+.report-print-title{font-size:18px;font-weight:900;text-align:center}.report-print-sub{font-size:10px;text-align:center;margin-top:3px}
+.report-summary{border:2px solid #000;padding:10px;margin:10px 0}.report-table{width:100%;border-collapse:collapse;border:1px solid #000;margin-top:6px}.report-table th{border:1px solid #000;padding:5px;font-size:10px;font-weight:800;text-align:left;background:#fff;color:#16a34a}.report-table td{border:1px solid #000;padding:5px;font-size:10px;text-align:left}
+@media print{body{background:#fff}body *{visibility:hidden}.reportPaper,.reportPaper *{visibility:visible}.reportPaper{position:absolute;left:0;top:0;width:100%}.noPrint{display:none!important}}
+</style></head><body>
+
+<div id="paywall" class="paywall"><div class="paybox">
+<h3 style="color:#16a34a">BUSINESS EMPIRE PRO</h3><p style="font-size:12px;font-weight:bold">Le300/Month - One Phone One Code</p>
+<div style="background:#fff7ed;padding:6px;border-radius:8px;border:1px dashed #f59e0b;text-align:left"><p><b>Orange Money: <span style="color:red">072039074</span></b><br>WhatsApp: <b>072641385</b></p></div>
+<div style="background:#f0f9ff;padding:6px;border-radius:8px;border:1px solid #0ea5e9;margin-top:6px"><p style="font-size:10px;font-weight:bold">📱 YOUR PHONE ID:</p><div class="deviceBox" id="deviceIdDisplay">LOADING</div></div>
+<div style="text-align:left;margin-top:6px"><input id="regBizName" placeholder="Business Name"><input id="regCode" placeholder="Activation Code"></div>
+<button class="btn btn-green" onclick="activate()">Unlock</button><button class="btn btn-dark" onclick="contactOwner()">WhatsApp 072641385</button>
+</div></div>
+
+<div class="header noPrint"><h3 id="headerBizName">GENERAL TRADING (SL) LTD</h3><p style="font-size:10px">📅 Global Date Filter: <span id="globalDateLabel" style="color:#fbbf24;font-weight:900"></span> | <span id="expiryText" style="color:#fbbf24"></span></p></div>
+
+<div class="card noPrint" style="border:2px solid #16a34a">
+<label style="font-weight:900;color:#16a34a">📅 SELECT DATE - This controls ALL tabs + Report</label>
+<input type="date" id="dashDate" onchange="renderAll()">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px">
+<button class="btn btn-green" onclick="setToday()">Today Data Only</button>
+<button class="btn btn-blue" onclick="setAll()">Show ALL Dates</button>
+</div>
+<p style="font-size:9px;color:#666;margin-top:3px">If you pick 02/10/2026, Stock, Sales, Cust, You Owe, Report all show only that day. Pick All = show everything.</p>
+</div>
+
+<div class="nav noPrint">
+<button onclick="showTab('dash')" id="btn-dash" class="active">Dash</button>
+<button onclick="showTab('stock')" id="btn-stock">Stock</button>
+<button onclick="showTab('sales')" id="btn-sales">Sales</button>
+<button onclick="showTab('exp')" id="btn-exp">Exp</button>
+<button onclick="showTab('cust')" id="btn-cust">Cust</button>
+<button onclick="showTab('sup')" id="btn-sup">You Owe</button>
+<button onclick="showTab('report')" id="btn-report">Report</button>
+<button onclick="showTab('settings')" id="btn-settings">⚙️</button>
+</div>
+
+<div id="tab-dash" class="tab noPrint"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+<div style="background:#0ea5e9;color:#fff;padding:8px;border-radius:8px;text-align:center"><p style="font-size:8px">Stock Left Value</p><h3 id="dashStock" style="font-size:11px">Le 0</h3></div>
+<div style="background:#16a34a;color:#fff;padding:8px;border-radius:8px;text-align:center"><p style="font-size:8px">Sales</p><h3 id="dashSales" style="font-size:11px">Le 0</h3></div>
+<div style="background:#8b5cf6;color:#fff;padding:8px;border-radius:8px;text-align:center"><p style="font-size:8px">Gross Profit</p><h3 id="dashProfit" style="font-size:11px">Le 0</h3></div>
+<div style="background:#f59e0b;color:#fff;padding:8px;border-radius:8px;text-align:center"><p style="font-size:8px">NET</p><h3 id="dashNet" style="font-size:11px">Le 0</h3></div>
+<div style="background:#ec4899;color:#fff;padding:8px;border-radius:8px;text-align:center"><p style="font-size:8px">Cust Owe Balance</p><h3 id="dashCust" style="font-size:11px">Le 0</h3></div>
+<div style="background:#ef4444;color:#fff;padding:8px;border-radius:8px;text-align:center"><p style="font-size:8px">You Owe Balance</p><h3 id="dashSup" style="font-size:11px">Le 0</h3></div>
+</div></div>
+
+<div id="tab-stock" class="tab noPrint" style="display:none">
+<div class="card">
+<h4>Stock - One Item One Row (No duplicate)</h4>
+<input id="stItem" list="stockItemsList" placeholder="Item e.g Rice - Type">
+<datalist id="stockItemsList"></datalist>
+<input id="stQty" type="number" placeholder="Qty e.g 100">
+<input id="stCost" type="number" placeholder="Cost per 1">
+<input id="stSell" type="number" placeholder="Sell per 1">
+<input id="stDate" type="date">
+<button class="btn btn-green" onclick="addStock()">Add Stock - If Rice exist, it adds to same Rice</button>
+<p style="font-size:9px;color:#666;margin-top:3px">Example: Rice Qty 100. Sell 50 -> Left 50. Add 50 again -> Rice Left 100 (not 2 Rice rows)</p>
+</div>
+<table id="stockTable"></table>
+</div>
+
+<div id="tab-sales" class="tab noPrint" style="display:none">
+<div class="card">
+<input id="saleItemInput" list="saleItemsList" placeholder="Type Item e.g Rice">
+<datalist id="saleItemsList"></datalist>
+<input id="saleQty" type="number" placeholder="Qty">
+<input id="saleDate" type="date">
+<button class="btn btn-green" onclick="addSale()">Sell</button>
+<p style="font-size:9px;color:#666">Click Sell Price in table to change price, Amt auto changes</p>
+</div>
+<table id="salesTable"></table>
+</div>
+
+<div id="tab-exp" class="tab noPrint" style="display:none"><div class="card"><input id="expName" placeholder="Expense e.g Transport"><input id="expAmt" type="number" placeholder="Amount"><input id="expDate" type="date"><button class="btn btn-red" onclick="addExp()">Add Expense</button></div><table id="expTable"></table></div>
+
+<div id="tab-cust" class="tab noPrint" style="display:none">
+<div class="card">
+<h4>Customer Debt - With Pay & Balance</h4>
+<input id="custName" placeholder="Name e.g Abu">
+<input id="custItem" placeholder="Item e.g 400 Bags Cement">
+<input id="custAmt" type="number" placeholder="Total Owe Amt e.g 700">
+<input id="custPhone" placeholder="Phone">
+<input id="custWapp" placeholder="WhatsApp">
+<label style="font-size:11px">Taken Date:</label><input id="custDateTaken" type="date">
+<label style="font-size:11px;color:red">Pay Date:</label><input id="custDatePay" type="date">
+<button class="btn btn-pink" onclick="addCust()">Add Customer Debt</button>
+<p style="font-size:9px;color:#666">In table: Click Pay to add payment. If owe 700, customer pay 500, balance 200. Finish Pay = remove.</p>
+</div>
+<table id="custTable"></table>
+</div>
+
+<div id="tab-sup" class="tab noPrint" style="display:none">
+<div class="card">
+<h4>You Owe Supplier - With Pay & Balance</h4>
+<input id="supName" placeholder="Supplier e.g Junisa">
+<input id="supItem" placeholder="Item Own e.g 500 bags Cement">
+<input id="supAmt" type="number" placeholder="Total Owe Amt e.g 700">
+<input id="supDate" type="date">
+<button class="btn btn-orange" onclick="addSup()">Add Supplier Credit</button>
+<p style="font-size:9px;color:#666">Same like Customer: Pay partial, see balance, Finish Pay remove</p>
+</div>
+<table id="supTable"></table>
+</div>
+
+<div id="tab-report" class="tab" style="display:none">
+<div class="card noPrint">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><button class="btn btn-green" onclick="genDailyReport()">That Day Report</button><button class="btn btn-blue" onclick="genAllReport()">All Days Report</button></div>
+<button class="btn btn-dark" onclick="window.print()">🖨️ Print Ultra Clear</button>
+</div>
+<div id="reportPaper" class="reportPaper"></div>
+</div>
+
+<div id="tab-settings" class="tab noPrint" style="display:none"><div class="card"><input id="setBizName"><button class="btn btn-green" onclick="saveSettings()">Save Name</button><p id="setExpiry" style="font-size:11px"></p><p id="setDevice" style="font-size:10px"></p><button class="btn btn-orange" onclick="contactOwner()">Renew Le300</button><button class="btn btn-red" onclick="logout()">Logout</button></div></div>
+
+<script>
+const SECRET="BUSINESS_EMPIRE_SL_2026";
+function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return Math.abs(h).toString(36).toUpperCase();}
+function getDeviceId(){let id=localStorage.getItem('be_deviceId');if(!id){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<8;i++){s+=c.charAt(Math.floor(Math.random()*c.length));if(i==3)s+='-';}id=s;localStorage.setItem('be_deviceId',id);}return id;}
+let deviceId=getDeviceId();
+let stock=JSON.parse(localStorage.getItem('be_stock_v2')||'[]');
+let sales=JSON.parse(localStorage.getItem('be_sales_v2')||'[]');
+let exps=JSON.parse(localStorage.getItem('be_exps')||'[]');
+let custs=JSON.parse(localStorage.getItem('be_cust_v4')||'[]');
+let sups=JSON.parse(localStorage.getItem('be_sup_v3')||'[]');
+let bizName=localStorage.getItem('be_bizName')||'GENERAL TRADING COMPANY (SL) LTD';
+let expiry=localStorage.getItem('be_expiry')||'';
+function save(){
+ localStorage.setItem('be_stock_v2',JSON.stringify(stock));
+ localStorage.setItem('be_sales_v2',JSON.stringify(sales));
+ localStorage.setItem('be_exps',JSON.stringify(exps));
+ localStorage.setItem('be_cust_v4',JSON.stringify(custs));
+ localStorage.setItem('be_sup_v3',JSON.stringify(sups));
+}
+function fmt(n){return 'Le '+Number(n).toLocaleString();}function fmtNum(n){return Number(n).toLocaleString();}
+function showTab(t){document.querySelectorAll('.tab').forEach(x=>x.style.display='none');document.getElementById('tab-'+t).style.display='block';document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));document.getElementById('btn-'+t).classList.add('active');}
+function setToday(){dashDate.valueAsDate=new Date();renderAll();}function setAll(){dashDate.value='';renderAll();}
+function contactOwner(){window.open('https://wa.me/23272641385?text='+encodeURIComponent('Phone ID: '+deviceId+' Business: '+bizName),'_blank');}
+function checkPaywall(){document.getElementById('deviceIdDisplay').innerText=deviceId;let now=new Date();let exp=expiry?new Date(expiry):null;if(!exp||now>exp){document.getElementById('paywall').style.display='flex';}else{document.getElementById('paywall').style.display='none';let d=Math.ceil((exp-now)/86400000);document.getElementById('expiryText').innerText='Active - '+d+' days';document.getElementById('setExpiry').innerText='Expires: '+exp.toLocaleDateString();}document.getElementById('headerBizName').innerText=bizName;document.getElementById('setBizName').value=bizName;document.getElementById('setDevice').innerText='Phone ID: '+deviceId;}
+function activate(){let codeRaw=document.getElementById('regCode').value.trim().replace(/-/g,'');let bName=document.getElementById('regBizName').value.trim();if(codeRaw==='1234'){bizName=bName||bizName;localStorage.setItem('be_bizName',bizName);let e=new Date();e.setDate(e.getDate()+2);localStorage.setItem('be_expiry',e.toISOString());expiry=e.toISOString();checkPaywall();renderAll();return;}try{let pad=codeRaw.length%4;if(pad)codeRaw+='='.repeat(4-pad);let dec=atob(codeRaw.toLowerCase());let p=dec.split('|');let dev=p[0].toUpperCase(),biz=p[1],expStr=p[2],hash=p[3];let calc=simpleHash(dev+"|"+biz+"|"+expStr+"|"+SECRET);if(calc!==hash||dev!==deviceId){alert('Invalid');return;}let expDate=new Date(expStr);if(new Date()>expDate){alert('Expired');return;}bizName=biz;localStorage.setItem('be_bizName',bizName);localStorage.setItem('be_expiry',expDate.toISOString());expiry=expDate.toISOString();checkPaywall();renderAll();}catch(e){alert('Invalid');}}
+function logout(){if(confirm('Logout?')){localStorage.removeItem('be_expiry');checkPaywall();}}
+function saveSettings(){let n=document.getElementById('setBizName').value.trim();if(n){bizName=n;localStorage.setItem('be_bizName',n);document.getElementById('headerBizName').innerText=n;alert('Saved');}}
+
+// 1. STOCK - ONE ITEM ONE ROW - ADD TO SAME ITEM
+function addStock(){
+ let item=stItem.value.trim(),qty=parseInt(stQty.value),cost=parseInt(stCost.value),sell=parseInt(stSell.value),date=stDate.value;
+ if(!item||!qty||!cost||!sell||!date){alert('Fill all');return;}
+ let existing=stock.find(s=>s.item.toLowerCase()===item.toLowerCase());
+ if(existing){
+   existing.qty+=qty;
+   existing.left+=qty;
+   existing.cost=cost;
+   existing.sell=sell;
+   existing.date=date;
+   alert(item+' already exist. Added '+qty+' to it. New Left: '+existing.left);
+ }else{
+   stock.push({id:Date.now(),item,qty,cost,sell,date,left:qty});
+ }
+ save();stItem.value='';stQty.value='';stCost.value='';stSell.value='';renderAll();
+}
+function editStockField(id, field){
+ let s=stock.find(x=>x.id==id);if(!s)return;
+ let newVal=prompt('Edit '+field+' for '+s.item+':', s[field]);if(newVal===null)return;
+ if(field==='item'){s.item=newVal;save();renderAll();return;}
+ newVal=parseInt(newVal);if(isNaN(newVal))return;
+ if(field==='qty'){let diff=newVal-s.qty;s.qty=newVal;s.left+=diff;if(s.left<0)s.left=0;}
+ else if(field==='left'){s.left=newVal;}
+ else{s[field]=newVal;}
+ save();renderAll();
+}
+function delStock(id){if(confirm('Delete stock?')){stock=stock.filter(x=>x.id!=id);save();renderAll();}}
+
+// 2. SALES - EDITABLE PRICE
+function addSale(){
+ let item=document.getElementById('saleItemInput').value.trim(),qty=parseInt(saleQty.value),date=saleDate.value;
+ if(!item||!qty||!date){alert('Fill Item, Qty, Date');return;}
+ let batch=stock.find(s=>s.item.toLowerCase()===item.toLowerCase() && s.left>=qty);
+ if(!batch){batch=stock.find(s=>s.item.toLowerCase().includes(item.toLowerCase()) && s.left>=qty);}
+ if(!batch){alert('No enough stock. Left: '+(stock.find(s=>s.item.toLowerCase()===item.toLowerCase())?.left||0));return;}
+ batch.left-=qty;
+ sales.push({id:Date.now(),item:batch.item,qty,sellPrice:batch.sell,amount:batch.sell*qty,profit:(batch.sell-batch.cost)*qty,cost:batch.cost,date});
+ save();document.getElementById('saleItemInput').value='';saleQty.value='';renderAll();
+}
+function editSaleField(id, field){
+ let s=sales.find(x=>x.id==id);if(!s)return;
+ let newVal=prompt('Edit '+field+' for '+s.item+' (Qty '+s.qty+'):', s[field]);if(newVal===null)return;
+ newVal=parseInt(newVal);if(isNaN(newVal))return;
+ let oldQty=s.qty;
+ if(field==='qty'){
+   let diff=newVal - oldQty;
+   let st=stock.find(st=>st.item.toLowerCase()===s.item.toLowerCase());
+   if(diff>0 && st && st.left<diff){alert('Not enough stock left: '+st.left);return;}
+   if(st){st.left-=diff;}
+   s.qty=newVal;
+   s.amount=s.sellPrice*s.qty;
+   s.profit=(s.sellPrice-s.cost)*s.qty;
+ }else if(field==='sellPrice'){
+   s.sellPrice=newVal;
+   s.amount=s.sellPrice*s.qty;
+   s.profit=(s.sellPrice-s.cost)*s.qty;
+ }
+ save();renderAll();
+}
+function delSale(id){
+ let s=sales.find(x=>x.id==id);if(!s)return;
+ if(confirm('Delete sale? Stock left will return')){
+   let st=stock.find(st=>st.item.toLowerCase()===s.item.toLowerCase());
+   if(st){st.left+=s.qty;}
+   sales=sales.filter(x=>x.id!=id);
+   save();renderAll();
+ }
+}
+
+function addExp(){let n=expName.value.trim(),a=parseInt(expAmt.value),d=expDate.value;if(!n||!a||!d){alert('Fill');return;}exps.push({id:Date.now(),name:n,amount:a,date:d});save();expName.value='';expAmt.value='';renderAll();}
+function delExp(id){exps=exps.filter(x=>x.id!=id);save();renderAll();}
+
+// 3. CUSTOMER DEBT WITH PAY + BALANCE
+function addCust(){
+ let name=custName.value.trim(),item=custItem.value.trim(),amount=parseInt(custAmt.value),phone=custPhone.value.trim(),wapp=custWapp.value.trim(),dateTaken=custDateTaken.value,datePay=custDatePay.value;
+ if(!name||!item||!amount||!dateTaken||!datePay){alert('Fill all');return;}
+ custs.push({id:Date.now(),name,item,total:amount,paid:0,balance:amount,phone,wapp,dateTaken,datePay});
+ save();custName.value='';custItem.value='';custAmt.value='';renderAll();
+}
+function payCust(id){
+ let c=custs.find(x=>x.id==id);if(!c)return;
+ let pay=prompt(c.name+' owe '+fmt(c.balance)+' (Total '+fmt(c.total)+'). How much he pay now?', '');if(pay===null)return;
+ pay=parseInt(pay);if(isNaN(pay)||pay<=0)return;
+ c.paid+=pay;
+ c.balance=c.total-c.paid;
+ if(c.balance<0)c.balance=0;
+ save();renderAll();
+}
+function finishCust(id){if(confirm('Finish pay? This will remove customer?')){custs=custs.filter(x=>x.id!=id);save();renderAll();}}
+function editCust(id){
+ let c=custs.find(x=>x.id==id);if(!c)return;
+ let newTotal=prompt('Edit Total Owe for '+c.name+':', c.total);if(newTotal===null)return;
+ newTotal=parseInt(newTotal);if(isNaN(newTotal))return;
+ c.total=newTotal;
+ c.balance=c.total-c.paid;
+ save();renderAll();
+}
+function delCust(id){custs=custs.filter(x=>x.id!=id);save();renderAll();}
+
+// 4. YOU OWE SUPPLIER WITH PAY + BALANCE
+function addSup(){
+ let name=supName.value.trim(),item=supItem.value.trim(),amount=parseInt(supAmt.value),date=supDate.value;
+ if(!name||!item||!amount||!date){alert('Fill all');return;}
+ sups.push({id:Date.now(),name,item,total:amount,paid:0,balance:amount,date});
+ save();supName.value='';supItem.value='';supAmt.value='';renderAll();
+}
+function paySup(id){
+ let s=sups.find(x=>x.id==id);if(!s)return;
+ let pay=prompt('You owe '+s.name+' '+fmt(s.balance)+' (Total '+fmt(s.total)+'). How much you pay now?','');if(pay===null)return;
+ pay=parseInt(pay);if(isNaN(pay)||pay<=0)return;
+ s.paid+=pay;
+ s.balance=s.total-s.paid;
+ if(s.balance<0)s.balance=0;
+ save();renderAll();
+}
+function finishSup(id){if(confirm('Finish pay supplier? Remove?')){sups=sups.filter(x=>x.id!=id);save();renderAll();}}
+function editSup(id){
+ let s=sups.find(x=>x.id==id);if(!s)return;
+ let newTotal=prompt('Edit Total for '+s.name+':', s.total);if(newTotal===null)return;
+ newTotal=parseInt(newTotal);if(isNaN(newTotal))return;
+ s.total=newTotal;s.balance=s.total-s.paid;save();renderAll();
+}
+function delSup(id){sups=sups.filter(x=>x.id!=id);save();renderAll();}
+
+function renderAll(){
+ if(!dashDate.value)dashDate.valueAsDate=new Date();
+ if(!stDate.value)stDate.valueAsDate=new Date();
+ if(!saleDate.value)saleDate.valueAsDate=new Date();
+ if(!expDate.value)expDate.valueAsDate=new Date();
+ if(!custDateTaken.value)custDateTaken.valueAsDate=new Date();
+ let tom=new Date();tom.setDate(tom.getDate()+7);if(!custDatePay.value)custDatePay.valueAsDate=tom;
+ if(!supDate.value)supDate.valueAsDate=new Date();
+
+ let filterDate=dashDate.value;
+ document.getElementById('globalDateLabel').innerText=filterDate?filterDate:'ALL DAYS';
+
+ let fStock=filterDate?stock.filter(s=>s.date===filterDate):stock;
+ let fSales=filterDate?sales.filter(s=>s.date===filterDate):sales;
+ let fExps=filterDate?exps.filter(s=>s.date===filterDate):exps;
+ let fCusts=filterDate?custs.filter(s=>s.dateTaken===filterDate):custs;
+ let fSups=filterDate?sups.filter(s=>s.date===filterDate):sups;
+
+ let uniqueItems=[...new Set(stock.map(s=>s.item))];
+ document.getElementById('stockItemsList').innerHTML=uniqueItems.map(i=>`<option value="${i}">`).join('');
+ document.getElementById('saleItemsList').innerHTML=stock.map(s=>`<option value="${s.item}">${s.item} (Left ${s.left})`).join('');
+
+ stockTable.innerHTML='<tr><th>Item</th><th>Qty</th><th>Left</th><th>Cost</th><th>Sell</th><th>Date</th><th>Action</th></tr>'+
+ fStock.slice().reverse().map(s=>`<tr>
+ <td><b>${s.item}</b></td>
+ <td class="editable" onclick="editStockField(${s.id},'qty')">${fmtNum(s.qty)}</td>
+ <td style="background:#dcfce7;font-weight:900;color:${s.left<=0?'red':'green'}" class="editable" onclick="editStockField(${s.id},'left')">${fmtNum(s.left)}</td>
+ <td class="editable" onclick="editStockField(${s.id},'cost')">Le ${fmtNum(s.cost)}</td>
+ <td class="editable" onclick="editStockField(${s.id},'sell')">Le ${fmtNum(s.sell)}</td>
+ <td>${s.date}</td>
+ <td><button class="btn btn-red btn-small" onclick="delStock(${s.id})">X</button></td>
+ </tr>`).join('')||'<tr><td colspan=7>No stock for '+ (filterDate||'All') +'</td></tr>';
+
+ salesTable.innerHTML='<tr><th>Date</th><th>Item</th><th>Qty</th><th>Price</th><th>Amt</th><th>Profit</th><th>Act</th></tr>'+
+ fSales.slice().reverse().map(s=>`<tr>
+ <td>${s.date}</td><td>${s.item}</td>
+ <td class="editable" onclick="editSaleField(${s.id},'qty')">${fmtNum(s.qty)}</td>
+ <td class="editable" onclick="editSaleField(${s.id},'sellPrice')">Le ${fmtNum(s.sellPrice)}</td>
+ <td>${fmt(s.amount)}</td><td>${fmt(s.profit)}</td>
+ <td><button class="btn btn-red btn-small" onclick="delSale(${s.id})">X</button></td>
+ </tr>`).join('')||'<tr><td colspan=7>No sales</td></tr>';
+
+ expTable.innerHTML='<tr><th>Date</th><th>Expense</th><th>Amt</th><th>X</th></tr>'+
+ fExps.slice().reverse().map(s=>`<tr><td>${s.date}</td><td>${s.name}</td><td>${fmt(s.amount)}</td><td><button class="btn btn-red btn-small" onclick="delExp(${s.id})">X</button></td></tr>`).join('')||'<tr><td colspan=4>No expenses</td></tr>';
+
+ custTable.innerHTML='<tr><th>Name</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th><th>Pay Date</th><th>Action</th></tr>'+
+ fCusts.slice().reverse().map(s=>`<tr>
+ <td><b>${s.name}</b><br><small>${s.phone||''}</small></td>
+ <td>${s.item}</td>
+ <td class="editable" onclick="editCust(${s.id})">${fmt(s.total)}</td>
+ <td style="color:green;font-weight:900">${fmt(s.paid)}</td>
+ <td style="color:red;font-weight:900">${fmt(s.balance)}</td>
+ <td>${s.datePay}</td>
+ <td>
+ <button class="btn btn-green btn-small" onclick="payCust(${s.id})">Pay</button>
+ <button class="btn btn-blue btn-small" onclick="finishCust(${s.id})">Finish</button>
+ <button class="btn btn-red btn-small" onclick="delCust(${s.id})">X</button>
+ </td>
+ </tr>`).join('')||'<tr><td colspan=7>No customer debt for '+(filterDate||'All')+'</td></tr>';
+
+ supTable.innerHTML='<tr><th>Supplier</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th><th>Date</th><th>Action</th></tr>'+
+ fSups.slice().reverse().map(s=>`<tr>
+ <td><b>${s.name}</b></td><td>${s.item}</td>
+ <td class="editable" onclick="editSup(${s.id})">${fmt(s.total)}</td>
+ <td style="color:green;font-weight:900">${fmt(s.paid)}</td>
+ <td style="color:red;font-weight:900">${fmt(s.balance)}</td>
+ <td>${s.date}</td>
+ <td>
+ <button class="btn btn-green btn-small" onclick="paySup(${s.id})">Pay</button>
+ <button class="btn btn-blue btn-small" onclick="finishSup(${s.id})">Finish</button>
+ <button class="btn btn-red btn-small" onclick="delSup(${s.id})">X</button>
+ </td>
+ </tr>`).join('')||'<tr><td colspan=7>No supplier credit for '+(filterDate||'All')+'</td></tr>';
+
+ let totalSales=fSales.reduce((a,b)=>a+b.amount,0);
+ let totalProfit=fSales.reduce((a,b)=>a+b.profit,0);
+ let totalExps=fExps.reduce((a,b)=>a+b.amount,0);
+ let totalCustBal=fCusts.reduce((a,b)=>a+b.balance,0);
+ let totalSupBal=fSups.reduce((a,b)=>a+b.balance,0);
+ let net=totalProfit-totalExps;
+ let stockSell=stock.reduce((a,b)=>a+(b.left*b.sell),0);
+
+ dashStock.innerText=fmt(stockSell);
+ dashSales.innerText=fmt(totalSales);
+ dashProfit.innerText=fmt(totalProfit);
+ dashNet.innerText=fmt(net);
+ dashCust.innerText=fmt(totalCustBal);
+ dashSup.innerText=fmt(totalSupBal);
+
+ genDailyReport();
+}
+
+function buildReport(isAll){
+ let filterDate=isAll?'':dashDate.value;
+ let fStock=isAll?stock:stock.filter(s=>s.date===filterDate);
+ let fSales=isAll?sales:sales.filter(s=>s.date===filterDate);
+ let fExps=isAll?exps:exps.filter(e=>e.date===filterDate);
+ let fCusts=isAll?custs:custs.filter(e=>e.dateTaken===filterDate);
+ let fSups=isAll?sups:sups.filter(e=>e.date===filterDate);
+ let stockCost=fStock.reduce((a,b)=>a+(b.qty*b.cost),0);
+ let stockSell=fStock.reduce((a,b)=>a+(b.qty*b.sell),0);
+ let totalSales=fSales.reduce((a,b)=>a+b.amount,0);
+ let totalCust=fCusts.reduce((a,b)=>a+b.balance,0);
+ let totalSup=fSups.reduce((a,b)=>a+b.balance,0);
+ let totalExps=fExps.reduce((a,b)=>a+b.amount,0);
+ let grossProfit=fSales.reduce((a,b)=>a+b.profit,0);
+ let netProfit=grossProfit-totalExps;
+ let dLabel=isAll?'ALL DAYS':(filterDate||'ALL DAYS');
+
+ return `
+ <div style="text-align:center;border-bottom:3px solid #000;padding-bottom:8px;margin-bottom:10px">
+ <div style="font-size:20px;font-weight:900">FULL BUSINESS REPORT</div>
+ <div style="font-size:11px">Business: ${bizName} | Device: ${deviceId} | Date: ${dLabel} | ${new Date().toLocaleString()}</div>
+ </div>
+ <div style="border:2px solid #000;padding:10px;margin-bottom:12px">
+ <b>SUMMARY - ${dLabel}</b><br>
+ <div style="font-size:12px;line-height:1.6">
+ Total Stock Cost: ${fmt(stockCost)}<br>
+ Total Stock Sell Value: ${fmt(stockSell)}<br>
+ Total Sales: ${fmt(totalSales)}<br>
+ Total Customer Debt (Balance): ${fmt(totalCust)}<br>
+ Total Supplier Credit (Balance): ${fmt(totalSup)}<br>
+ Total Expenses: ${fmt(totalExps)}<br>
+ Gross Profit: ${fmt(grossProfit)}<br>
+ <b style="background:#000;color:#fff;padding:4px;display:block;text-align:center;margin-top:5px">NET PROFIT: ${fmt(netProfit)} - PROFIT</b>
+ </div></div>
+
+ <b>1. STOCK</b><table class="report-table"><tr><th>Item</th><th>Qty</th><th>Left</th><th>Cost</th><th>Sell</th></tr>
+ ${fStock.map(s=>`<tr><td>${s.item}</td><td>${fmtNum(s.qty)}</td><td>${fmtNum(s.left)}</td><td>Le ${fmtNum(s.cost)}</td><td>Le ${fmtNum(s.sell)}</td></tr>`).join('')||'<tr><td colspan=5>No stock</td></tr>'}</table>
+
+ <br><b>2. SALES</b><table class="report-table"><tr><th>Date</th><th>Item</th><th>Qty</th><th>Price</th><th>Amt</th><th>Profit</th></tr>
+ ${fSales.map(s=>`<tr><td>${s.date}</td><td>${s.item}</td><td>${fmtNum(s.qty)}</td><td>Le ${fmtNum(s.sellPrice)}</td><td>${fmt(s.amount)}</td><td>${fmt(s.profit)}</td></tr>`).join('')||'<tr><td colspan=6>No sales</td></tr>'}</table>
+
+ <br><b>3. CUSTOMER DEBT</b><table class="report-table"><tr><th>Name</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th><th>Phone</th><th>Pay Date</th></tr>
+ ${fCusts.map(s=>`<tr><td>${s.name}</td><td>${s.item}</td><td>${fmt(s.total)}</td><td>${fmt(s.paid)}</td><td>${fmt(s.balance)}</td><td>${s.phone||''}</td><td>${s.datePay}</td></tr>`).join('')||'<tr><td colspan=7>No debt</td></tr>'}</table>
+
+ <br><b>4. SUPPLIER CREDIT</b><table class="report-table"><tr><th>Supplier</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th><th>Date</th></tr>
+ ${fSups.map(s=>`<tr><td>${s.name}</td><td>${s.item}</td><td>${fmt(s.total)}</td><td>${fmt(s.paid)}</td><td>${fmt(s.balance)}</td><td>${s.date}</td></tr>`).join('')||'<tr><td colspan=6>No credit</td></tr>'}</table>
+
+ <br><b>5. EXPENSES</b><table class="report-table"><tr><th>Date</th><th>Expense</th><th>Amt</th></tr>
+ ${fExps.map(s=>`<tr><td>${s.date}</td><td>${s.name}</td><td>${fmt(s.amount)}</td></tr>`).join('')||'<tr><td colspan=3>No expenses</td></tr>'}</table>
+ `;
+}
+function genDailyReport(){document.getElementById('reportPaper').innerHTML=buildReport(false);}
+function genAllReport(){document.getElementById('reportPaper').innerHTML=buildReport(true);}
+
+checkPaywall();renderAll();
+</script></body></html>
