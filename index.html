@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GENERAL TRADING COMPANY (SL) LTD</title>
+<style>
+*{box-sizing:border-box;font-family:Arial}
+body{background:#f1f5f9;margin:0;padding:10px}
+.header{background:#111827;color:#fff;padding:12px;text-align:center;border-radius:10px;font-weight:bold;font-size:18px}
+.globalBox{background:#fff;border:2px solid #16a34a;border-radius:10px;padding:10px;margin:10px 0}
+.globalBox input{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin:6px 0}
+.btns{display:flex;gap:8px}
+.btns button{flex:1;padding:10px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+.todayBtn{background:#16a34a;color:#fff}
+.allBtn{background:#2563eb;color:#fff}
+.tabs{display:flex;gap:4px;overflow:auto;margin:10px 0}
+.tabs button{padding:8px 10px;border:none;border-radius:6px;background:#e5e7eb;cursor:pointer;white-space:nowrap}
+.tabs button.active{background:#111827;color:#fff}
+.card{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.card h3{margin:0 0 8px 0;font-size:16px}
+input,select{width:100%;padding:10px;margin:5px 0;border:1px solid #cbd5e1;border-radius:6px}
+.addBtn{width:100%;padding:12px;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;margin-top:6px}
+.stockBtn{background:#16a34a}
+.saleBtn{background:#16a34a}
+.expBtn{background:#ef4444}
+.custBtn{background:#ec4899}
+.supBtn{background:#f59e0b;color:#000}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{border:1px solid #000;padding:6px;text-align:left}
+th{background:#e5e7eb}
+.dashGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{padding:12px;border-radius:10px;color:#000;font-weight:bold;text-align:center}
+.t1{background:#22c55e}.t2{background:#38bdf8}.t3{background:#a78bfa}.t4{background:#fb7185}.t5{background:#fde68a}.t6{background:#fdba74}
+.reportPaper{background:#fff;color:#000;padding:10px;border:2px solid #000}
+@media print{
+ .noPrint{display:none!important}
+  body{background:#fff!important;padding:0!important;margin:0!important}
+ .card{box-shadow:none!important}
+  #tab-report{display:block!important}
+ .reportPaper{border:none!important}
+ .tabs,.header,.globalBox,.dashGrid{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="header noPrint">GENERAL TRADING COMPANY (SL) LTD<br><small id="globalInfo">Global Date Filter</small></div>
+
+<div class="globalBox noPrint">
+<label><b>📅 SELECT DATE - This controls ALL tabs + Report</b></label>
+<input type="date" id="globalDate" value="2026-10-02">
+<div class="btns">
+<button class="todayBtn" onclick="setFilter('today')">Today Data Only</button>
+<button class="allBtn" onclick="setFilter('all')">Show ALL Dates</button>
+</div>
+<small>If you pick 02/10/2026, Stock, Sales, Cust, You Owe, Report all show only that day. Pick ALL to show everything</small>
+</div>
+
+<div class="tabs noPrint">
+<button id="b-dash" class="active" onclick="showTab('dash')">Dash</button>
+<button id="b-stock" onclick="showTab('stock')">Stock</button>
+<button id="b-sales" onclick="showTab('sales')">Sales</button>
+<button id="b-exp" onclick="showTab('exp')">Exp</button>
+<button id="b-cust" onclick="showTab('cust')">Cust</button>
+<button id="b-you" onclick="showTab('you')">You Owe</button>
+<button id="b-report" onclick="showTab('report')">Report</button>
+</div>
+
+<!-- DASH -->
+<div id="tab-dash" class="card noPrint">
+<div class="dashGrid">
+<div class="tile t1">Stock Left Value<br><span id="d-stock">Le 0</span></div>
+<div class="tile t2">Sales<br><span id="d-sales">Le 0</span></div>
+<div class="tile t3">Gross Profit<br><span id="d-gross">Le 0</span></div>
+<div class="tile t4">Net Profit<br><span id="d-net">Le 0</span></div>
+<div class="tile t5">Cust Owe Balance<br><span id="d-cust">Le 0</span></div>
+<div class="tile t6">You Owe Balance<br><span id="d-you">Le 0</span></div>
+</div>
+</div>
+
+<!-- STOCK -->
+<div id="tab-stock" class="card noPrint" style="display:none">
+<h3>Stock - One Item One Row (No duplicate)</h3>
+<input id="stItem" placeholder="Item e.g Rice">
+<input id="stQty" type="number" placeholder="Qty e.g 100">
+<input id="stCost" type="number" placeholder="Cost per 1">
+<input id="stSell" type="number" placeholder="Sell per 1">
+<input id="stDate" type="date" value="2026-10-02">
+<button class="addBtn stockBtn" onclick="addStock()">Add Stock - If Rice exist, it adds to same Rice</button>
+<small>Example: Rice Qty 100. Sell 50. Left 50. Add again Rice 50 again -> Rice 100 (not 2 rows)</small>
+<div style="overflow:auto"><table id="stockTable"></table></div>
+</div>
+
+<!-- SALES -->
+<div id="tab-sales" class="card noPrint" style="display:none">
+<h3>Sales - One Item One Row Per Date (No duplicate) - Amount & Profit auto change</h3>
+<input id="saleItem" placeholder="Type Item e.g Rice">
+<input id="saleQty" type="number" placeholder="Qty">
+<input id="salePrice" type="number" placeholder="Sell Price per 1 (if empty use stock sell)">
+<input id="saleDate" type="date" value="2026-10-02">
+<button class="addBtn saleBtn" onclick="addSale()">Sell - If Cement exist same date, it adds to same Cement</button>
+<small>Click Price in table to change price. Amt auto changes. If same item exist same day, Qty adds and Profit changes.</small>
+<div style="overflow:auto"><table id="salesTable"></table></div>
+</div>
+
+<!-- EXP -->
+<div id="tab-exp" class="card noPrint" style="display:none">
+<h3>Expenses</h3>
+<input id="expName" placeholder="Expense e.g Transport">
+<input id="expAmt" type="number" placeholder="Amount">
+<input id="expDate" type="date" value="2026-10-02">
+<button class="addBtn expBtn" onclick="addExp()">Add Expense</button>
+<div style="overflow:auto"><table id="expTable"></table></div>
+</div>
+
+<!-- CUST -->
+<div id="tab-cust" class="card noPrint" style="display:none">
+<h3>Customer Debt - With Pay & Balance</h3>
+<input id="custName" placeholder="Name e.g Abu">
+<input id="custItem" placeholder="Item e.g 400 Bags Cement">
+<input id="custTotal" type="number" placeholder="Total Owe Amt e.g 700">
+<input id="custPhone" placeholder="Phone">
+<input id="custTaken" type="date" value="2026-10-02">
+<input id="custPayDate" type="date" value="2026-10-30">
+<button class="addBtn custBtn" onclick="addCust()">Add Customer Debt</button>
+<div style="overflow:auto"><table id="custTable"></table></div>
+</div>
+
+<!-- YOU OWE -->
+<div id="tab-you" class="card noPrint" style="display:none">
+<h3>You Owe Supplier - With Pay & Balance</h3>
+<input id="youName" placeholder="Supplier e.g Junisa">
+<input id="youItem" placeholder="Item Own e.g 500 bags Cement">
+<input id="youTotal" type="number" placeholder="Total Owe Amt e.g 700">
+<input id="youDate" type="date" value="2026-10-02">
+<button class="addBtn supBtn" onclick="addYou()">Add Supplier Credit</button>
+<div style="overflow:auto"><table id="youTable"></table></div>
+</div>
+
+<!-- REPORT -->
+<div id="tab-report" class="card">
+<div class="noPrint" style="display:flex;gap:6px;margin-bottom:8px">
+<button class="todayBtn" style="flex:1;padding:10px;border:none;border-radius:6px" onclick="makeReport('today')">That Day Report</button>
+<button class="allBtn" style="flex:1;padding:10px;border:none;border-radius:6px" onclick="makeReport('all')">All Days Report</button>
+</div>
+<button class="noPrint" style="width:100%;padding:10px;background:#111827;color:#fff;border:none;border-radius:6px;margin-bottom:10px" onclick="window.print()">🖨️ Print Ultra Clear</button>
+<div id="reportArea" class="reportPaper">Click That Day or All Days to generate report</div>
+</div>
+
+<script>
+let filterMode='today';
+let stockData=JSON.parse(localStorage.getItem('stock')||'[]');
+let salesData=JSON.parse(localStorage.getItem('sales')||'[]');
+let expData=JSON.parse(localStorage.getItem('exp')||'[]');
+let custData=JSON.parse(localStorage.getItem('cust')||'[]');
+let youData=JSON.parse(localStorage.getItem('you')||'[]');
+
+function showTab(t){
+document.querySelectorAll('[id^=tab-]').forEach(e=>e.style.display='none');
+document.getElementById('tab-'+t).style.display='block';
+document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+document.getElementById('b-'+t).classList.add('active');
+}
+function setFilter(m){
+filterMode=m;
+document.getElementById('globalInfo').innerText='Global Filter: '+document.getElementById('globalDate').value+' | Mode: '+m;
+renderAll();
+}
+document.getElementById('globalDate').addEventListener('change',()=>{renderAll();});
+
+function getFDate(){return document.getElementById('globalDate').value;}
+
+function filterByDate(arr){
+if(filterMode==='all') return arr;
+let d=getFDate();
+return arr.filter(x=>x.date===d);
+}
+
+// STOCK - ONE ROW NO DUPLICATE
+function addStock(){
+let item=document.getElementById('stItem').value.trim();
+let qty=parseInt(document.getElementById('stQty').value)||0;
+let cost=parseInt(document.getElementById('stCost').value)||0;
+let sell=parseInt(document.getElementById('stSell').value)||0;
+let date=document.getElementById('stDate').value;
+if(!item||!qty){alert('Enter item & qty');return;}
+let ex=stockData.find(s=>s.item.toLowerCase()===item.toLowerCase());
+if(ex){
+ex.qty+=qty;
+ex.left+=qty;
+ex.cost=cost||ex.cost;
+ex.sell=sell||ex.sell;
+ex.date=date;
+}else{
+stockData.push({item,qty,left:qty,cost,sell,date});
+}
+localStorage.setItem('stock',JSON.stringify(stockData));
+renderAll();
+}
+
+// SALES - ONE ROW NO DUPLICATE PER DATE - AMOUNT & PROFIT CHANGE
+function addSale(){
+let item=document.getElementById('saleItem').value.trim();
+let qty=parseInt(document.getElementById('saleQty').value)||0;
+let price=parseInt(document.getElementById('salePrice').value)||0;
+let date=document.getElementById('saleDate').value;
+if(!item||!qty){alert('Enter item & qty');return;}
+let stock=stockData.find(s=>s.item.toLowerCase()===item.toLowerCase());
+let cost=stock?stock.cost:0;
+let sellPrice=price|| (stock?stock.sell:0);
+if(!sellPrice){alert('Enter sell price or add stock sell price first');return;}
+// NO DUPLICATE CHECK - SAME ITEM + SAME DATE
+let exist=salesData.find(s=>s.item.toLowerCase()===item.toLowerCase() && s.date===date);
+if(exist){
+exist.qty+=qty;
+exist.price=sellPrice;
+exist.amt=exist.qty*sellPrice;
+exist.profit=exist.qty*(sellPrice-cost);
+}else{
+salesData.push({item,qty,price:sellPrice,amt:qty*sellPrice,profit:qty*(sellPrice-cost),date});
+}
+if(stock){
+stock.left-=qty;
+if(stock.left<0)stock.left=0;
+}
+localStorage.setItem('sales',JSON.stringify(salesData));
+localStorage.setItem('stock',JSON.stringify(stockData));
+renderAll();
+}
+
+function addExp(){
+let name=document.getElementById('expName').value.trim();
+let amt=parseInt(document.getElementById('expAmt').value)||0;
+let date=document.getElementById('expDate').value;
+if(!name||!amt)return;
+expData.push({name,amt,date});
+localStorage.setItem('exp',JSON.stringify(expData));
+renderAll();
+}
+function addCust(){
+let name=document.getElementById('custName').value.trim();
+let item=document.getElementById('custItem').value.trim();
+let total=parseInt(document.getElementById('custTotal').value)||0;
+let phone=document.getElementById('custPhone').value.trim();
+let taken=document.getElementById('custTaken').value;
+let payDate=document.getElementById('custPayDate').value;
+if(!name||!total)return;
+custData.push({name,item,total,paid:0,balance:total,phone,taken,payDate,date:taken});
+localStorage.setItem('cust',JSON.stringify(custData));
+renderAll();
+}
+function addYou(){
+let name=document.getElementById('youName').value.trim();
+let item=document.getElementById('youItem').value.trim();
+let total=parseInt(document.getElementById('youTotal').value)||0;
+let date=document.getElementById('youDate').value;
+if(!name||!total)return;
+youData.push({name,item,total,paid:0,balance:total,date});
+localStorage.setItem('you',JSON.stringify(youData));
+renderAll();
+}
+function del(arrName,i){
+if(arrName==='stock'){stockData.splice(i,1);localStorage.setItem('stock',JSON.stringify(stockData));}
+if(arrName==='sales'){salesData.splice(i,1);localStorage.setItem('sales',JSON.stringify(salesData));}
+if(arrName==='exp'){expData.splice(i,1);localStorage.setItem('exp',JSON.stringify(expData));}
+if(arrName==='cust'){custData.splice(i,1);localStorage.setItem('cust',JSON.stringify(custData));}
+if(arrName==='you'){youData.splice(i,1);localStorage.setItem('you',JSON.stringify(youData));}
+renderAll();
+}
+function payDebt(type,i){
+let amt=parseInt(prompt('Enter pay amount:'))||0;
+if(!amt)return;
+if(type==='cust'){
+custData[i].paid+=amt;
+custData[i].balance=custData[i].total-custData[i].paid;
+if(custData[i].balance<0)custData[i].balance=0;
+localStorage.setItem('cust',JSON.stringify(custData));
+}
+if(type==='you'){
+youData[i].paid+=amt;
+youData[i].balance=youData[i].total-youData[i].paid;
+if(youData[i].balance<0)youData[i].balance=0;
+localStorage.setItem('you',JSON.stringify(youData));
+}
+renderAll();
+}
+
+function renderAll(){
+let fDate=getFDate();
+document.getElementById('globalInfo').innerText='Global Date Filter: '+fDate+' | Mode: '+filterMode;
+// filter
+let fStock=filterByDate(stockData);
+let fSales=filterByDate(salesData);
+let fExp=filterByDate(expData);
+let fCust=filterByDate(custData);
+let fYou=filterByDate(youData);
+
+// tables
+let stH='<tr><th>Item</th><th>Qty</th><th>Left</th><th>Cost</th><th>Sell</th><th>Date</th><th>Action</th></tr>';
+fStock.forEach((s,i)=>{
+let realIdx=stockData.indexOf(s);
+stH+=`<tr><td>${s.item}</td><td>${s.qty}</td><td>${s.left}</td><td>${s.cost}</td><td>${s.sell}</td><td>${s.date}</td><td><button onclick="del('stock',${realIdx})">X</button></td></tr>`;
+});
+document.getElementById('stockTable').innerHTML=stH;
+
+let saH='<tr><th>Date</th><th>Item</th><th>Qty</th><th>Price</th><th>Amt</th><th>Profit</th><th>Act</th></tr>';
+fSales.forEach((s,i)=>{
+let realIdx=salesData.indexOf(s);
+saH+=`<tr><td>${s.date}</td><td>${s.item}</td><td>${s.qty}</td><td>${s.price}</td><td>${s.amt}</td><td>${s.profit}</td><td><button onclick="del('sales',${realIdx})">X</button></td></tr>`;
+});
+document.getElementById('salesTable').innerHTML=saH;
+
+let exH='<tr><th>Date</th><th>Expense</th><th>Amt</th><th>X</th></tr>';
+fExp.forEach(s=>{
+let realIdx=expData.indexOf(s);
+exH+=`<tr><td>${s.date}</td><td>${s.name}</td><td>${s.amt}</td><td><button onclick="del('exp',${realIdx})">X</button></td></tr>`;
+});
+document.getElementById('expTable').innerHTML=exH;
+
+let cuH='<tr><th>Name</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th><th>Action</th></tr>';
+fCust.forEach((s,i)=>{
+let realIdx=custData.indexOf(s);
+cuH+=`<tr><td>${s.name}</td><td>${s.item}</td><td>${s.total}</td><td>${s.paid}</td><td>${s.balance}</td><td><button onclick="payDebt('cust',${realIdx})">Pay</button><button onclick="del('cust',${realIdx})">X</button></td></tr>`;
+});
+document.getElementById('custTable').innerHTML=cuH;
+
+let yoH='<tr><th>Supplier</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th><th>Action</th></tr>';
+fYou.forEach(s=>{
+let realIdx=youData.indexOf(s);
+yoH+=`<tr><td>${s.name}</td><td>${s.item}</td><td>${s.total}</td><td>${s.paid}</td><td>${s.balance}</td><td><button onclick="payDebt('you',${realIdx})">Pay</button><button onclick="del('you',${realIdx})">X</button></td></tr>`;
+});
+document.getElementById('youTable').innerHTML=yoH;
+
+// dash calc
+let stockVal=fStock.reduce((a,b)=>a+b.left*b.sell,0);
+let salesAmt=fSales.reduce((a,b)=>a+b.amt,0);
+let gross=fSales.reduce((a,b)=>a+b.profit,0);
+let expAmt=fExp.reduce((a,b)=>a+b.amt,0);
+let net=gross-expAmt;
+let custBal=fCust.reduce((a,b)=>a+b.balance,0);
+let youBal=fYou.reduce((a,b)=>a+b.balance,0);
+document.getElementById('d-stock').innerText='Le '+stockVal.toLocaleString();
+document.getElementById('d-sales').innerText='Le '+salesAmt.toLocaleString();
+document.getElementById('d-gross').innerText='Le '+gross.toLocaleString();
+document.getElementById('d-net').innerText='Le '+net.toLocaleString();
+document.getElementById('d-cust').innerText='Le '+custBal.toLocaleString();
+document.getElementById('d-you').innerText='Le '+youBal.toLocaleString();
+}
+
+let lastReportMode='today';
+function makeReport(mode){
+lastReportMode=mode;
+let d=getFDate();
+let fStock=mode==='today'?stockData.filter(x=>x.date===d):stockData;
+let fSales=mode==='today'?salesData.filter(x=>x.date===d):salesData;
+let fExp=mode==='today'?expData.filter(x=>x.date===d):expData;
+let fCust=mode==='today'?custData.filter(x=>x.date===d):custData;
+let fYou=mode==='today'?youData.filter(x=>x.date===d):youData;
+let stockVal=fStock.reduce((a,b)=>a+b.left*b.sell,0);
+let stockCost=fStock.reduce((a,b)=>a+b.qty*b.cost,0);
+let salesAmt=fSales.reduce((a,b)=>a+b.amt,0);
+let gross=fSales.reduce((a,b)=>a+b.profit,0);
+let expAmt=fExp.reduce((a,b)=>a+b.amt,0);
+let net=gross-expAmt;
+let custBal=fCust.reduce((a,b)=>a+b.balance,0);
+let youBal=fYou.reduce((a,b)=>a+b.balance,0);
+let html=`<h2 style="text-align:center;border-bottom:2px solid #000;padding-bottom:6px">FULL BUSINESS REPORT</h2>
+<div>Business: GENERAL TRADING COMPANY (SL) LTD | Device: ${navigator.userAgent.slice(0,30)} | Date: ${d}</div>
+<div style="border:2px solid #000;padding:8px;margin:8px 0"><b>SUMMARY - ${d}</b><br>
+Total Stock Cost: Le ${stockCost.toLocaleString()}<br>
+Total Stock Sell Value: Le ${stockVal.toLocaleString()}<br>
+Total Sales: Le ${salesAmt.toLocaleString()}<br>
+Total Customer Debt (Balance): Le ${custBal.toLocaleString()}<br>
+Total Supplier Credit (Balance): Le ${youBal.toLocaleString()}<br>
+Total Expenses: Le ${expAmt.toLocaleString()}<br>
+Gross Profit: Le ${gross.toLocaleString()}<br>
+<b>NET PROFIT: Le ${net.toLocaleString()} - ${net>=0?'PROFIT':'LOSS'}</b></div>
+<h3>1. STOCK</h3><table><tr><th>Item</th><th>Qty</th><th>Left</th><th>Cost</th><th>Sell</th></tr>${fStock.map(s=>`<tr><td>${s.item}</td><td>${s.qty}</td><td>${s.left}</td><td>${s.cost}</td><td>${s.sell}</td></tr>`).join('')}</table>
+<h3>2. SALES</h3><table><tr><th>Date</th><th>Item</th><th>Qty</th><th>Price</th><th>Amt</th><th>Profit</th></tr>${fSales.map(s=>`<tr><td>${s.date}</td><td>${s.item}</td><td>${s.qty}</td><td>${s.price}</td><td>${s.amt}</td><td>${s.profit}</td></tr>`).join('')}</table>
+<h3>3. CUSTOMER DEBT</h3><table><tr><th>Name</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th></tr>${fCust.map(s=>`<tr><td>${s.name}</td><td>${s.item}</td><td>${s.total}</td><td>${s.paid}</td><td>${s.balance}</td></tr>`).join('')}</table>
+<h3>4. SUPPLIER CREDIT</h3><table><tr><th>Supplier</th><th>Item</th><th>Total</th><th>Paid</th><th>Balance</th></tr>${fYou.map(s=>`<tr><td>${s.name}</td><td>${s.item}</td><td>${s.total}</td><td>${s.paid}</td><td>${s.balance}</td></tr>`).join('')}</table>
+<h3>5. EXPENSES</h3><table><tr><th>Date</th><th>Expense</th><th>Amt</th></tr>${fExp.map(s=>`<tr><td>${s.date}</td><td>${s.name}</td><td>${s.amt}</td></tr>`).join('')}</table>`;
+document.getElementById('reportArea').innerHTML=html;
+}
+
+renderAll();
+</script>
+</body>
+</html>
