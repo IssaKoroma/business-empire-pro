@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Business Empire Pro</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0a122a;margin:0;padding:0;min-height:100vh;color:#e2e8f0}
+#loginOverlay{position:fixed;inset:0;background:#0a122a;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}
+.loginBox{background:#111e3a;border:1px solid #1e3a5f;border-radius:20px;padding:20px;width:100%;max-width:400px}
+.loginBox h2{color:#22c55e;text-align:center;margin:0;font-size:22px}
+.loginBox input{width:100%;padding:14px;margin:7px 0;border-radius:12px;border:1px solid #1e3a5f;background:#0f1d36;color:#fff;font-size:15px}
+.loginBtn{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:bold;font-size:16px;cursor:pointer}
+.payBox{background:linear-gradient(135deg,#ff6a00,#ff8c00);border-radius:12px;padding:12px;margin:10px 0;color:#fff;text-align:center;font-weight:bold}
+.header{background:linear-gradient(135deg,#020617,#1e293b);color:#fff;padding:14px;text-align:center;border-radius:0 0 16px 16px}
+.header b{color:#22c55e;font-size:20px}
+.tabs{display:flex;gap:5px;overflow:auto;margin:10px}
+.tabs button{padding:9px 11px;border:1px solid #1e3a5f;border-radius:9px;background:#111e3a;color:#94a3b8;cursor:pointer;white-space:nowrap;font-weight:600;font-size:11px}
+.tabs button.active{background:#22c55e;color:#000}
+.card{background:#f8fafc;border-radius:14px;padding:12px;margin:10px;color:#0f172a}
+.card input,.card select{width:100%;padding:11px;margin:5px 0;border:2px solid #e2e8f0;border-radius:10px;background:#fff;color:#000}
+.addBtn{width:100%;padding:13px;border:none;border-radius:12px;color:#fff;font-weight:bold;cursor:pointer;margin-top:6px}
+.genBtn{background:#16a34a}.stockBtn{background:#16a34a}.saleBtn{background:#0891b2}.expBtn{background:#ef4444}.custBtn{background:#ec4899}.supBtn{background:#f59e0b}.setBtn{background:#0f172a}
+table{width:100%;border-collapse:collapse;font-size:10px;margin-top:8px}th,td{border:1px solid #cbd5e1;padding:6px;text-align:left}th{background:#0f172a;color:#fff}
+.payBtn{background:#22c55e;border:none;padding:5px 8px;border-radius:6px;font-weight:bold;cursor:pointer}
+.dashGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{padding:14px;border-radius:12px;font-weight:bold;text-align:center;color:#000;font-size:12px}
+.t1{background:#86efac}.t2{background:#7dd3fc}.t3{background:#c4b5fd}.t4{background:#fda4af}.t5{background:#fde68a}.t6{background:#fed7aa}
+.subCard{background:#0f1d36;border:1px solid #1e3a5f;border-radius:12px;padding:10px;margin:8px 0;color:#e2e8f0}
+.reportPaper{background:#fff;color:#000;padding:15px;border-radius:10px}
+</style>
+</head>
+<body>
+<div id="loginOverlay"><div class="loginBox">
+<h2>BUSINESS EMPIRE PRO</h2>
+<p style="text-align:center;color:#94a3b8;font-size:11px">One Code One Phone - Le300/Month</p>
+<div class="payBox">Orange Money 072039084<br>Issa Koroma - Le300=1Month</div>
+<input id="loginPhone" placeholder="Phone e.g 072...">
+<input id="loginCode" placeholder="Code e.g EMP-A1B2">
+<button class="loginBtn" onclick="doLogin()">🔓 Unlock App</button>
+<a href="https://wa.me/23272641385" style="display:block;text-align:center;background:#25D366;color:#fff;padding:12px;border-radius:10px;margin-top:10px;text-decoration:none;font-weight:bold">📲 WhatsApp: 072641385</a>
+</div></div>
+
+<div class="header"><b id="bizHeader">BUSINESS EMPIRE PRO</b> <button onclick="logout()" style="float:right;background:#ef4444;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:10px">Logout</button><br><small id="globalInfo" style="color:#94a3b8"></small></div>
+
+<div style="margin:10px"><div style="background:#111e3a;border:1px solid #1e3a5f;border-radius:12px;padding:10px"><label style="color:#38bdf8;font-weight:bold;font-size:11px">📅 SELECT DATE</label><input type="date" id="globalDate" value="2026-10-02" style="width:100%;padding:10px;margin:5px 0;border-radius:8px;border:1px solid #1e3a5f;background:#0f1d36;color:#fff"><div style="display:flex;gap:6px"><button onclick="setFilter('today')" style="flex:1;padding:9px;border:none;border-radius:8px;background:#16a34a;color:#fff;font-weight:bold">Today Only</button><button onclick="setFilter('all')" style="flex:1;padding:9px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-weight:bold">ALL</button></div></div></div>
+
+<div class="tabs">
+<button id="b-dash" class="active" onclick="showTab('dash')">Dash</button>
+<button id="b-stock" onclick="showTab('stock')">Stock</button>
+<button id="b-sales" onclick="showTab('sales')">Sales</button>
+<button id="b-exp" onclick="showTab('exp')">Exp</button>
+<button id="b-cust" onclick="showTab('cust')">Cust</button>
+<button id="b-you" onclick="showTab('you')">Supplier</button>
+<button id="b-report" onclick="showTab('report')">Report</button>
+<button id="b-set" onclick="showTab('set')" style="display:none;background:#22c55e;color:#000">⚙️ Admin</button>
+</div>
+
+<div id="tab-dash" class="card"><div class="dashGrid"><div class="tile t1">Stock<br><span id="d-stock">Le0</span></div><div class="tile t2">Sales<br><span id="d-sales">Le0</span></div><div class="tile t3">Gross<br><span id="d-gross">Le0</span></div><div class="tile t4">Net<br><span id="d-net">Le0</span></div><div class="tile t5">Cust<br><span id="d-cust">Le0</span></div><div class="tile t6">Supplier<br><span id="d-you">Le0</span></div></div></div>
+
+<div id="tab-stock" class="card" style="display:none"><h3>Stock</h3><input id="stItem" placeholder="Item"><input id="stQty" type="number" placeholder="Qty"><input id="stCost" type="number" placeholder="Cost"><input id="stSell" type="number" placeholder="Sell"><input id="stDate" type="date" value="2026-10-02"><button class="addBtn stockBtn" onclick="addStock()">Add Stock</button><table id="stockTable"></table></div>
+<div id="tab-sales" class="card" style="display:none"><h3>Sales</h3><input id="saleItem" placeholder="Item"><input id="saleQty" type="number" placeholder="Qty"><input id="salePrice" type="number" placeholder="Price"><input id="saleDate" type="date" value="2026-10-02"><button class="addBtn saleBtn" onclick="addSale()">Sell</button><table id="salesTable"></table></div>
+<div id="tab-exp" class="card" style="display:none"><h3>Expenses</h3><input id="expName" placeholder="Expense"><input id="expAmt" type="number" placeholder="Amt"><input id="expDate" type="date" value="2026-10-02"><button class="addBtn expBtn" onclick="addExp()">Add Expense</button><table id="expTable"></table></div>
+<div id="tab-cust" class="card" style="display:none"><h3>Customer Debt</h3><input id="custName" placeholder="Name"><input id="custItem" placeholder="Item"><input id="custTotal" type="number" placeholder="Total"><input id="custPhone" placeholder="Phone"><input id="custTaken" type="date" value="2026-10-02"><input id="custPayDate" type="date" value="2026-10-30"><button class="addBtn custBtn" onclick="addCust()">Add</button><table id="custTable"></table></div>
+<div id="tab-you" class="card" style="display:none"><h3>Supplier Credit</h3><input id="youName" placeholder="Supplier"><input id="youItem" placeholder="Item"><input id="youTotal" type="number" placeholder="Total"><input id="youDate" type="date" value="2026-10-02"><button class="addBtn supBtn" onclick="addYou()">Add Supplier</button><table id="youTable"></table></div>
+
+<div id="tab-report" class="card">
+<div style="display:flex;gap:6px;margin-bottom:10px"><button onclick="makeReport('today')" style="flex:1;padding:12px;border:none;border-radius:10px;background:#16a34a;color:#fff;font-weight:bold">That Day Report</button><button onclick="makeReport('all')" style="flex:1;padding:12px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-weight:bold">All Days Report</button></div>
+<button onclick="printOnlyReport()" style="width:100%;padding:14px;background:#000;color:#fff;border:none;border-radius:10px;margin-bottom:10px;font-weight:900">🖨️ PRINT - CLEAR REPORT (Like Your Picture)</button>
+<div id="reportArea" class="reportPaper">Click That Day Report to see clean report like your picture</div>
+</div>
+
+<div id="tab-set" class="card" style="display:none"><h3>⚙️ Admin Generate Code</h3><div class="subCard"><input id="genName" placeholder="Customer Name"><input id="genPhone" placeholder="Phone"><select id="genMonths" style="width:100%;padding:12px;border-radius:10px;background:#0f1d36;color:#fff;border:1px solid #1e3a5f;margin:6px 0"><option value="1">1 Month Le300</option><option value="2">2 Months Le600</option><option value="3">3 Months Le900</option><option value="6">6 Months Le1800</option><option value="10">10 Months Le3000</option></select><button class="addBtn genBtn" onclick="generateCode()">Generate</button><div id="genResult" style="margin-top:10px;color:#facc15;background:#000;padding:10px;border-radius:8px"></div><a id="waSendLink" href="#" target="_blank" style="display:none;background:#25D366;color:#fff;padding:12px;border-radius:8px;text-align:center;text-decoration:none;margin-top:8px;font-weight:bold">Send WhatsApp</a></div><table id="subTable"></table><hr><input id="bizNameInput" placeholder="Business Name"><button class="addBtn setBtn" onclick="saveBiz()">Save Name</button></div>
+
+<script>
+let filterMode='today';
+let stockData=JSON.parse(localStorage.getItem('stock')||'[]');
+let salesData=JSON.parse(localStorage.getItem('sales')||'[]');
+let expData=JSON.parse(localStorage.getItem('exp')||'[]');
+let custData=JSON.parse(localStorage.getItem('cust')||'[]');
+let youData=JSON.parse(localStorage.getItem('you')||'[]');
+let subs=JSON.parse(localStorage.getItem('subscribers')||'[]');
+let bizName=localStorage.getItem('bizName')||'BUSINESS EMPIRE PRO';
+function fm(n){return 'Le '+Number(n||0).toLocaleString('en-US');}
+let currentIsAdmin=false;
+function isAdminUser(p,c){return (p==='admin'||p==='072037074'||p==='072039084'||p==='072641385')&&(c==='Issa2024!'||c==='Issa2024'||c==='admin123');}
+function checkLogin(){let s=JSON.parse(localStorage.getItem('session')||'null');if(!s){document.getElementById('loginOverlay').style.display='flex';currentIsAdmin=false;hideAdmin();return;}if(isAdminUser(s.phone,s.code)){document.getElementById('loginOverlay').style.display='none';currentIsAdmin=true;showAdmin();return;}let f=subs.find(x=>x.code===s.code&&x.phone===s.phone);if(!f){document.getElementById('loginOverlay').style.display='flex';currentIsAdmin=false;hideAdmin();return;}let t=new Date().toISOString().split('T')[0];if(f.expiry<t){alert('Expired '+f.expiry);document.getElementById('loginOverlay').style.display='flex';currentIsAdmin=false;hideAdmin();return;}document.getElementById('loginOverlay').style.display='none';currentIsAdmin=false;hideAdmin();}
+function showAdmin(){document.getElementById('b-set').style.display='block';}
+function hideAdmin(){document.getElementById('b-set').style.display='none';if(document.getElementById('tab-set').style.display==='block'){document.getElementById('tab-set').style.display='none';showTab('dash');}}
+function doLogin(){let p=document.getElementById('loginPhone').value.trim();let c=document.getElementById('loginCode').value.trim();if(!p||!c){alert('Enter');return;}if(isAdminUser(p,c)){localStorage.setItem('session',JSON.stringify({phone:p,code:c}));checkLogin();renderAll();return;}let f=subs.find(s=>s.phone===p&&s.code===c);if(!f){alert('Wrong code! Call 072641385');return;}let t=new Date().toISOString().split('T')[0];if(f.expiry<t){alert('Expired '+f.expiry);return;}localStorage.setItem('session',JSON.stringify({phone:p,code:c}));checkLogin();renderAll();}
+function logout(){localStorage.removeItem('session');location.reload();}
+function generateCode(){if(!currentIsAdmin){alert('Only Admin');return;}let n=document.getElementById('genName').value.trim();let p=document.getElementById('genPhone').value.trim();let m=parseInt(document.getElementById('genMonths').value)||1;if(!p){alert('Phone');return;}let code='EMP-'+Math.random().toString(36).substring(2,7).toUpperCase();let d=new Date();d.setDate(d.getDate()+(m*30));let exp=d.toISOString().split('T')[0];let tot=m*300;let e=subs.find(s=>s.phone===p);if(e){e.code=code;e.expiry=exp;e.months=m;e.total=tot;e.name=n;}else{subs.push({name:n,phone:p,code,expiry:exp,months:m,total:tot,date:new Date().toISOString().split('T')[0]});}localStorage.setItem('subscribers',JSON.stringify(subs));document.getElementById('genResult').innerHTML=`Code: <b style="font-size:20px;color:#fff">${code}</b><br>Phone:${p}<br>${m}M Le${tot}<br>Exp:${exp}`;let wa=`https://wa.me/${p.replace(/[^0-9]/g,'')}?text=`+encodeURIComponent(`✅ CODE\nPhone:${p}\nCode:${code}\nMonths:${m}\nPaid:Le${tot}\nExp:${exp}\nOrange:072039084`);document.getElementById('waSendLink').href=wa;document.getElementById('waSendLink').style.display='block';renderSubs();}
+function renderSubs(){let h='<tr><th>Name</th><th>Phone</th><th>Code</th><th>Months</th><th>Exp</th><th>Act</th></tr>';subs.forEach((s,i)=>{h+=`<tr><td>${s.name||''}</td><td>${s.phone}</td><td><b>${s.code}</b></td><td>${s.months}M</td><td>${s.expiry}</td><td><button onclick="delSub(${i})" style="background:red;color:#fff;border:none;padding:3px">Del</button></td></tr>`;});document.getElementById('subTable').innerHTML=h;}
+function delSub(i){if(confirm('Delete?')){subs.splice(i,1);localStorage.setItem('subscribers',JSON.stringify(subs));renderSubs();}}
+function showTab(t){if(t==='set'&&!currentIsAdmin){alert('Admin only');return;}document.querySelectorAll('[id^=tab-]').forEach(e=>e.style.display='none');document.getElementById('tab-'+t).style.display='block';document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));let b=document.getElementById('b-'+t);if(b)b.classList.add('active');}
+function setFilter(m){filterMode=m;renderAll();}
+function getFDate(){return document.getElementById('globalDate').value;}
+function filterByDate(a){if(filterMode==='all')return a;let d=getFDate();return a.filter(x=>x.date===d||x.taken===d);}
+function saveBiz(){let v=document.getElementById('bizNameInput').value.trim();if(!v)return;bizName=v;localStorage.setItem('bizName',v);renderAll();}
+function addStock(){let i=document.getElementById('stItem').value.trim();let q=parseInt(document.getElementById('stQty').value)||0;let c=parseInt(document.getElementById('stCost').value)||0;let s=parseInt(document.getElementById('stSell').value)||0;let d=document.getElementById('stDate').value;if(!i||!q)return;let ex=stockData.find(x=>x.item.toLowerCase()===i.toLowerCase());if(ex){ex.qty+=q;ex.left+=q;ex.cost=c||ex.cost;ex.sell=s||ex.sell;ex.date=d;}else{stockData.push({item:i,qty:q,left:q,cost:c,sell:s,date:d});}localStorage.setItem('stock',JSON.stringify(stockData));renderAll();}
+function addSale(){let i=document.getElementById('saleItem').value.trim();let q=parseInt(document.getElementById('saleQty').value)||0;let p=parseInt(document.getElementById('salePrice').value)||0;let d=document.getElementById('saleDate').value;if(!i||!q)return;let st=stockData.find(x=>x.item.toLowerCase()===i.toLowerCase());let cost=st?st.cost:0;let sp=p||(st?st.sell:0);if(!sp)return;let ex=salesData.find(x=>x.item.toLowerCase()===i.toLowerCase()&&x.date===d);if(ex){ex.qty+=q;ex.price=sp;ex.amt=ex.qty*sp;ex.profit=ex.qty*(sp-cost);}else{salesData.push({item:i,qty:q,price:sp,amt:q*sp,profit:q*(sp-cost),date:d});}if(st){st.left-=q;if(st.left<0)st.left=0;}localStorage.setItem('sales',JSON.stringify(salesData));localStorage.setItem('stock',JSON.stringify(stockData));renderAll();}
+function addExp(){let n=document.getElementById('expName').value.trim();let a=parseInt(document.getElementById('expAmt').value)||0;let d=document.getElementById('expDate').value;if(!n||!a)return;expData.push({name:n,amt:a,date:d});localStorage.setItem('exp',JSON.stringify(expData));renderAll();}
+function addCust(){let n=document.getElementById('custName').value.trim();let it=document.getElementById('custItem').value.trim();let t=parseInt(document.getElementById('custTotal').value)||0;let ph=document.getElementById('custPhone').value.trim();let tk=document.getElementById('custTaken').value;let pd=document.getElementById('custPayDate').value;if(!n||!t)return;custData.push({name:n,item:it,total:t,paid:0,balance:t,phone:ph,taken:tk,payDate:pd,date:tk});localStorage.setItem('cust',JSON.stringify(custData));renderAll();}
+function addYou(){let n=document.getElementById('youName').value.trim();let it=document.getElementById('youItem').value.trim();let t=parseInt(document.getElementById('youTotal').value)||0;let d=document.getElementById('youDate').value;if(!n||!t)return;youData.push({name:n,item:it,total:t,paid:0,balance:t,date:d});localStorage.setItem('you',JSON.stringify(youData));renderAll();}
+function payDebt(type,i){let a=parseInt(prompt('Pay amount:'))||0;if(!a)return;if(type==='cust'){custData[i].paid+=a;custData[i].balance=custData[i].total-custData[i].paid;if(custData[i].balance<0)custData[i].balance=0;localStorage.setItem('cust',JSON.stringify(custData));}if(type==='you'){youData[i].paid+=a;youData[i].balance=youData[i].total-youData[i].paid;if(youData[i].balance<0)youData[i].balance=0;localStorage.setItem('you',JSON.stringify(youData));}renderAll();}
+function renderAll(){
+document.getElementById('bizHeader').innerText=bizName;document.getElementById('bizNameInput').value=bizName;
+let d=getFDate();document.getElementById('globalInfo').innerText='Date: '+d+' | '+filterMode;
+let fStock=filterByDate(stockData);let fSales=filterByDate(salesData);let fExp=filterByDate(expData);let fCust=filterByDate(custData);let fYou=filterByDate(youData);
+document.getElementById('stockTable').innerHTML='<tr><th>Item</th><th>Qty</th><th>Left</th><th>Cost</th><th>Sell</th></tr>'+fStock.map(s=>`<tr><td>${s.item}</td><td>${s.qty}</td><td>${s.left}</td><td>${fm(s.cost)}</td><td>${fm(s.sell)}</td></tr>`).join('');
+document.getElementById('salesTable').innerHTML='<tr><th>Date</th><th>Item</th><th>Qty</th><th>Amt</th><th>Profit</th></tr>'+fSales.map(s=>`<tr><td>${s.date}</td><td>${s.item}</td><td>${s.qty}</td><td>${fm(s.amt)}</td><td>${fm(s.profit)}</td></tr>`).join('');
+document.getElementById('expTable').innerHTML='<tr><th>Date</th><th>Expense</th><th>Amt</th></tr>'+fExp.map(s=>`<tr><td>${s.date}</td><td>${s.name}</td><td>${fm(s.amt)}</td></tr>`).join('');
+document.getElementById('custTable').innerHTML='<tr><th>Name</th><th>Item</th><th>Total</th><th>Balance</th><th>Phone</th><th>Pay</th></tr>'+fCust.map(s=>{let ri=custData.indexOf(s);return `<tr><td>${s.name}</td><td>${s.item}</td><td>${fm(s.total)}</td><td><b>${fm(s.balance)}</b></td><td>${s.phone||''}</td><td><button class="payBtn" onclick="payDebt('cust',${ri})">Pay</button></td></tr>`}).join('');
+document.getElementById('youTable').innerHTML='<tr><th>Supplier</th><th>Item</th><th>Total</th><th>Balance</th><th>Date</th></tr>'+fYou.map(s=>{let ri=youData.indexOf(s);return `<tr><td>${s.name}</td><td>${s.item}</td><td>${fm(s.total)}</td><td><b>${fm(s.balance)}</b></td><td>${s.date}</td></tr>`}).join('');
+let sv=fStock.reduce((a,b)=>a+b.left*b.sell,0);let sa=fSales.reduce((a,b)=>a+b.amt,0);let gp=fSales.reduce((a,b)=>a+b.profit,0);let ea=fExp.reduce((a,b)=>a+b.amt,0);let net=gp-ea;let cb=fCust.reduce((a,b)=>a+b.balance,0);let yb=fYou.reduce((a,b)=>a+b.balance,0);
+document.getElementById('d-stock').innerText=fm(sv);document.getElementById('d-sales').innerText=fm(sa);document.getElementById('d-gross').innerText=fm(gp);document.getElementById('d-net').innerText=fm(net);document.getElementById('d-cust').innerText=fm(cb);document.getElementById('d-you').innerText=fm(yb);
+if(currentIsAdmin)renderSubs();
+}
+
+// REPORT LIKE YOUR PICTURE - GREEN HEADERS, NUMBERED, CLEAR BOLD
+function makeReport(mode){
+let d=getFDate();
+let fStock=mode==='today'?stockData.filter(x=>x.date===d):stockData;
+let fSales=mode==='today'?salesData.filter(x=>x.date===d):salesData;
+let fExp=mode==='today'?expData.filter(x=>x.date===d):expData;
+let fCust=mode==='today'?custData.filter(x=>x.date===d||x.taken===d):custData;
+let fYou=mode==='today'?youData.filter(x=>x.date===d):youData;
+
+let stockCost=fStock.reduce((a,b)=>a+b.qty*b.cost,0);
+let stockSell=fStock.reduce((a,b)=>a+b.qty*b.sell,0);
+let salesAmt=fSales.reduce((a,b)=>a+b.amt,0);
+let gross=fSales.reduce((a,b)=>a+b.profit,0);
+let expAmt=fExp.reduce((a,b)=>a+b.amt,0);
+let net=gross-expAmt;
+let custBal=fCust.reduce((a,b)=>a+b.balance,0);
+let supBal=fYou.reduce((a,b)=>a+b.balance,0);
+let profitText = net>=0? ' - PROFIT' : ' - LOSS';
+
+let html=`
+<div style="font-family:Arial,sans-serif;color:#000;background:#fff;padding:0">
+
+<div style="border:2px solid #000;padding:14px;margin-bottom:20px;background:#fff">
+<div style="font-weight:900;font-size:15px;color:#000;margin-bottom:8px">SUMMARY</div>
+<div style="font-size:14px;color:#000;line-height:1.7;font-weight:500">
+Total Stock Cost: ${fm(stockCost)}<br>
+Total Stock Sell Value: ${fm(stockSell)}<br>
+Total Sales: ${fm(salesAmt)}<br>
+Total Customer Debt: ${fm(custBal)}<br>
+Total Supplier Credit: ${fm(supBal)}<br>
+Total Expenses: ${fm(expAmt)}<br>
+<span style="font-weight:900;color:#000">Gross Profit: ${fm(gross)}</span><br>
+<span style="font-weight:900;color:${net>=0?'#16a34a':'#dc2626'}">NET PROFIT (Profit - Expenses): ${fm(net)}${profitText}</span>
+</div>
+</div>
+
+<div style="font-weight:900;font-size:16px;color:#000;margin:18px 0 8px 0">1. STOCK</div>
+<table style="width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:18px">
+<tr><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a;background:#fff">Item</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Qty</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Cost</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Sell</td></tr>
+${fStock.map(s=>`<tr><td style="border:1px solid #000;padding:7px;color:#000;font-weight:500">${s.item}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.qty}</td><td style="border:1px solid #000;padding:7px;color:#000">${fm(s.cost)}</td><td style="border:1px solid #000;padding:7px;color:#000">${fm(s.sell)}</td></tr>`).join('') || '<tr><td colspan=4 style="border:1px solid #000;padding:7px">No data</td></tr>'}
+</table>
+
+<div style="font-weight:900;font-size:16px;color:#000;margin:18px 0 8px 0">2. SALES</div>
+<table style="width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:18px">
+<tr><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Date</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Item</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Qty</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Amt</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Profit</td></tr>
+${fSales.map(s=>`<tr><td style="border:1px solid #000;padding:7px;color:#000">${s.date}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.item}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.qty}</td><td style="border:1px solid #000;padding:7px;color:#000">${fm(s.amt)}</td><td style="border:1px solid #000;padding:7px;color:#000">${fm(s.profit)}</td></tr>`).join('') || '<tr><td colspan=5 style="border:1px solid #000;padding:7px">No data</td></tr>'}
+</table>
+
+<div style="font-weight:900;font-size:16px;color:#000;margin:18px 0 8px 0">3. CUSTOMER DEBT</div>
+<table style="width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:18px">
+<tr><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Name</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Item</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Amt</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Phone</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Pay Date</td></tr>
+${fCust.map(s=>`<tr><td style="border:1px solid #000;padding:7px;color:#000;font-weight:600">${s.name}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.item}</td><td style="border:1px solid #000;padding:7px;color:#000">${fm(s.total)}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.phone||''}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.payDate||''}</td></tr>`).join('') || '<tr><td colspan=5 style="border:1px solid #000;padding:7px">No data</td></tr>'}
+</table>
+
+<div style="font-weight:900;font-size:16px;color:#000;margin:18px 0 8px 0">4. SUPPLIER CREDIT</div>
+<table style="width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:18px">
+<tr><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Supplier</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Item</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Amt</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Date</td></tr>
+${fYou.map(s=>`<tr><td style="border:1px solid #000;padding:7px;color:#000;font-weight:600">${s.name}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.item}</td><td style="border:1px solid #000;padding:7px;color:#000">${fm(s.total)}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.date}</td></tr>`).join('') || '<tr><td colspan=4 style="border:1px solid #000;padding:7px">No data</td></tr>'}
+</table>
+
+<div style="font-weight:900;font-size:16px;color:#000;margin:18px 0 8px 0">5. EXPENSES</div>
+<table style="width:100%;border-collapse:collapse;border:1.5px solid #000;margin-bottom:18px">
+<tr><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Date</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Expense</td><td style="border:1px solid #000;padding:8px;font-weight:700;color:#16a34a">Amt</td></tr>
+${fExp.map(s=>`<tr><td style="border:1px solid #000;padding:7px;color:#000">${s.date}</td><td style="border:1px solid #000;padding:7px;color:#000">${s.name}</td><td style="border:1px solid #000;padding:7px;color:#000">${fm(s.amt)}</td></tr>`).join('') || '<tr><td colspan=3 style="border:1px solid #000;padding:7px">No data</td></tr>'}
+</table>
+
+<div style="text-align:center;margin-top:30px;border-top:2px solid #000;padding-top:10px;color:#000;font-size:11px">
+${bizName} | Orange Money: 072039084 | WhatsApp: 072641385 | Printed: ${new Date().toLocaleString()}
+</div>
+
+</div>
+`;
+document.getElementById('reportArea').innerHTML=html;
+}
+
+function printOnlyReport(){
+let content=document.getElementById('reportArea').innerHTML;
+if(!content || content.includes('Click That Day')){alert('First click That Day Report!');return;}
+let w=window.open('','','width=1000,height=800');
+w.document.write(`
+<html><head><title>Business Report</title>
+<style>
+body{font-family:Arial,sans-serif;color:#000;background:#fff;padding:20px;margin:0}
+table{width:100%;border-collapse:collapse;border:1.5px solid #000}
+td,th{border:1px solid #000;padding:7px;font-size:13px;color:#000}
+@page{margin:10mm}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head><body>${content}</body></html>
+`);
+w.document.close();w.focus();setTimeout(()=>{w.print();},600);
+}
+document.getElementById('globalDate').addEventListener('change',()=>renderAll());checkLogin();renderAll();
+</script>
+</body>
+</html>
