@@ -1,0 +1,143 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BApp - BUSINESS EMPIRE PRO</title>
+<meta name="theme-color" content="#ff6a00">
+<style>*{box-sizing:border-box;font-family:Arial}body{background:#1a0f00;margin:0;color:#ffe6cc}#loginOverlay{position:fixed;inset:0;background:#1a0f00;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}.loginBox{background:#2a1a00;border:2px solid #ff6a00;border-radius:20px;padding:20px;width:100%;max-width:400px}.loginBox h2{color:#ff6a00;text-align:center;margin:0;font-size:20px}.loginBox input{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #ff6a00;background:#1a0f00;color:#fff}.loginBtn{width:100%;padding:12px;border:none;border-radius:10px;background:#ff6a00;color:#fff;font-weight:bold;cursor:pointer}.payBox{background:linear-gradient(90deg,#ff6a00,#ff9500);border-radius:10px;padding:10px;margin:10px 0;color:#fff;text-align:center;font-weight:bold}.header{background:#000;color:#fff;padding:12px;text-align:center;border-bottom:3px solid #ff6a00}.header b{color:#ff6a00;font-size:18px}.tabs{display:flex;gap:4px;overflow:auto;margin:8px}.tabs button{padding:8px 10px;border:1px solid #ff6a00;border-radius:8px;background:#2a1a00;color:#ffcc99;white-space:nowrap;font-size:11px}.tabs button.active{background:#ff6a00;color:#fff;font-weight:bold}.card{background:#fff;border-radius:12px;padding:10px;margin:8px;color:#000;overflow:hidden;border:2px solid #ff6a00}.card input,.card select{width:100%;padding:10px;margin:4px 0;border:1px solid #ffaa66;border-radius:8px}.addBtn{width:100%;padding:12px;border:none;border-radius:10px;color:#fff;font-weight:bold;margin-top:5px}.dashGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.tile{padding:12px;border-radius:10px;font-weight:bold;text-align:center;font-size:12px;border:1px solid #ff6a00}.t1{background:#ffe0b3}.t2{background:#ffcc80}.t3{background:#ffb84d}.t4{background:#ff9933}.t5{background:#ffaa66}.t6{background:#ff6a00;color:#fff}table{width:100%;border-collapse:collapse;font-size:10px;margin-top:6px}th,td{border:1px solid #ffcc99;padding:5px;white-space:nowrap}th{background:#1a0f00;color:#ff6a00}.reportPaper{background:#fff;color:#000;padding:8px;border-radius:8px;max-height:85vh;overflow:auto}.subCard{background:#2a1a00;border:1px solid #ff6a00;border-radius:10px;padding:8px;margin:6px 0;color:#ffe6cc}.multiBox{background:#fff2e6;border:2px dashed #ff6a00;border-radius:10px;padding:8px;margin:4px 0}.equalRow{display:flex;gap:6px}.equalRow input{flex:1;min-width:0}.miniTable td{font-size:11px}
+.rtable{width:100%!important;table-layout:fixed!important;border-collapse:collapse!important}
+.rtable th,.rtable td{border:1.5px solid #000!important;padding:6px 3px!important;font-size:10px!important;word-wrap:break-word!important;white-space:normal!important;text-align:center!important;overflow:hidden!important}
+.rtable th{background:#ff6a00!important;color:#fff!important;font-weight:900!important;font-size:9px!important}
+.rItems{width:35%!important;text-align:left!important;font-size:8px!important}
+.notif{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-150px);background:#10b981;color:#fff;padding:14px 20px;border-radius:12px;font-weight:800;transition:.4s;z-index:99;width:90%;text-align:center}.notif.show{transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div id="loginOverlay"><div class="loginBox"><h2>💰 BApp<br>BUSINESS EMPIRE PRO</h2><p style="text-align:center;color:#ff6a00;font-size:12px;font-weight:bold">🔒 SECURE ORANGE</p><div class="payBox">Orange Money 072039084<br>Le300/Month</div><input id="lp" placeholder="Your Phone"><input id="lc" placeholder="Code"><button class="loginBtn" onclick="doLogin()">🔓 Unlock</button></div></div>
+<div class="header"><b id="bizH">BApp</b> <button onclick="logout()" style="float:right;background:red;color:#fff;border:none;padding:3px 6px;border-radius:4px;font-size:10px">Logout</button><br><small id="gInfo" style="color:#ffcc99"></small><small id="expInfo" style="color:#ff6a00"></small></div>
+<div style="margin:8px"><div style="background:#2a1a00;border:1px solid #ff6a00;border-radius:10px;padding:8px"><label style="color:#ff6a00;font-size:11px;font-weight:bold">SELECT DATE</label><input type="date" id="gDate" value="2026-10-03" style="width:100%;padding:8px;margin:4px 0;border-radius:6px;border:1px solid #ff6a00;background:#1a0f00;color:#fff"><div style="display:flex;gap:4px"><button onclick="setF('today')" style="flex:1;padding:8px;border:none;border-radius:6px;background:#ff6a00;color:#fff;font-weight:bold">Today</button><button onclick="setF('all')" style="flex:1;padding:8px;border:none;border-radius:6px;background:#000;color:#ff6a00;border:1px solid #ff6a00;font-weight:bold">ALL</button></div></div></div>
+<div class="tabs"><button id="b-dash" class="active" onclick="sh('dash')">Dash</button><button id="b-stock" onclick="sh('stock')">Stock</button><button id="b-sales" onclick="sh('sales')">Sales</button><button id="b-exp" onclick="sh('exp')">Exp</button><button id="b-cust" onclick="sh('cust')">Cust</button><button id="b-you" onclick="sh('you')">Supplier</button><button id="b-report" onclick="sh('report')">Report</button><button id="b-settings" onclick="sh('settings')">Settings</button><button id="b-set" onclick="sh('set')" style="display:none;background:#ff6a00;color:#fff">Admin</button></div>
+<div id="tab-dash" class="card"><div class="dashGrid"><div class="tile t1">Stock<br><span id="d-stock">Le0</span></div><div class="tile t2">Sales<br><span id="d-sales">Le0</span></div><div class="tile t3">Gross<br><span id="d-gross">Le0</span></div><div class="tile t4">Net<br><span id="d-net">Le0</span></div><div class="tile t5">Cust<br><span id="d-cust">Le0</span></div><div class="tile t6">Supplier<br><span id="d-you">Le0</span></div></div></div>
+<div id="tab-stock" class="card" style="display:none"><input id="stItem" placeholder="Item"><input id="stQty" type="number" placeholder="Qty"><input id="stCost" type="number" placeholder="Cost"><input id="stSell" type="number" placeholder="Sell"><input id="stDate" type="date" value="2026-10-03"><button class="addBtn" style="background:#ff6a00" onclick="addStock()">Add Stock</button><table id="stockTable"></table></div>
+<div id="tab-sales" class="card" style="display:none"><input id="saItem" placeholder="Item"><input id="saQty" type="number" placeholder="Qty"><input id="saPrice" type="number" placeholder="Price"><input id="saDate" type="date" value="2026-10-03"><button class="addBtn" style="background:#ff9500" onclick="addSale()">Sell</button><table id="salesTable"></table></div>
+<div id="tab-exp" class="card" style="display:none"><input id="exName" placeholder="Expense"><input id="exAmt" type="number" placeholder="Amt"><input id="exDate" type="date" value="2026-10-03"><button class="addBtn" style="background:#cc5500" onclick="addExp()">Add Expense</button><table id="expTable"></table></div>
+<div id="tab-cust" class="card" style="display:none"><input id="cuName" placeholder="Customer Name"><div class="multiBox"><h4>🛒 ADD MULTIPLE ITEMS - Customer</h4><div class="equalRow"><input id="cuBItem" placeholder="Item"><input id="cuBQty" type="number" placeholder="Qty"><input id="cuBPrice" type="number" placeholder="Price each"></div><button class="addBtn" style="background:#ff6a00;padding:8px" onclick="addCustLine()">+ Add Item to List</button><table id="custBuilderTable" class="miniTable"></table><div id="custBuilderTotal" style="text-align:right;font-weight:900;color:#000;margin-top:4px">Total: Le 0</div></div><input id="cuTotal" type="number" placeholder="Total (auto)"><input id="cuPaid" type="number" placeholder="Paid - 0 if none"><input id="cuPhone" placeholder="Phone"><label style="font-size:11px;font-weight:bold">Date Taken</label><input id="cuTaken" type="date" value="2026-10-03"><label style="font-size:11px;font-weight:bold">Date to Pay</label><input id="cuPayDate" type="date" value="2026-10-31"><button class="addBtn" style="background:#ff6a00" onclick="addCust()">Save Cust Debt</button><div style="overflow:auto"><table id="custTable"></table></div></div>
+<div id="tab-you" class="card" style="display:none"><input id="yoName" placeholder="Supplier Name"><div class="multiBox"><h4 style="color:#92400e">🛒 ADD MULTIPLE ITEMS - Supplier</h4><div class="equalRow"><input id="yoBItem" placeholder="Item"><input id="yoBQty" type="number" placeholder="Qty"><input id="yoBPrice" type="number" placeholder="Price each"></div><button class="addBtn" style="background:#cc5500;padding:8px" onclick="addYouLine()">+ Add Item to List</button><table id="youBuilderTable" class="miniTable"></table><div id="youBuilderTotal" style="text-align:right;font-weight:900;color:#000;margin-top:4px">Total: Le 0</div></div><input id="yoTotal" type="number" placeholder="Total (auto)"><input id="yoPaid" type="number" placeholder="Paid - 0 if none"><input id="yoDate" type="date" value="2026-10-03"><button class="addBtn" style="background:#ff9500" onclick="addYou()">Add Supplier</button><div style="overflow:auto"><table id="youTable"></table></div></div>
+<div id="tab-report" class="card" style="display:none"><div style="display:flex;gap:5px;margin-bottom:8px"><button onclick="makeR('today')" style="flex:1;padding:10px;border:none;border-radius:8px;background:#ff6a00;color:#fff;font-weight:bold">That Day</button><button onclick="makeR('all')" style="flex:1;padding:10px;border:none;border-radius:8px;background:#000;color:#ff6a00;border:1px solid #ff6a00;font-weight:bold">All Days</button></div><button onclick="printR()" style="width:100%;padding:12px;background:#000;color:#ff6a00;border:1px solid #ff6a00;border-radius:8px;margin-bottom:8px;font-weight:900">PRINT CLEAR</button><div id="reportArea" class="reportPaper">Click That Day or All Days</div></div>
+<div id="tab-settings" class="card" style="display:none"><h3 style="color:#ff6a00">⚙️ Settings</h3><div class="subCard"><p style="color:#ff6a00;font-weight:bold">Edit Business Name</p><input id="bizInCust" placeholder="Business Name" value="BApp"><button class="addBtn" style="background:#ff6a00" onclick="saveBCust()">Save Business Name</button></div><div class="subCard"><p style="color:#ff6a00;font-weight:bold">Danger Zone</p><button class="addBtn" style="background:red" onclick="clearAll()">Clear All Data</button></div></div>
+<div id="tab-set" class="card" style="display:none"><h3 style="color:#ff6a00">Admin</h3><input id="bizIn" placeholder="Business Name" value="BUSINESS EMPIRE PRO"><button class="addBtn" style="background:#ff6a00" onclick="saveB()">Save Business Name</button></div>
+<div id="notif" class="notif"></div>
+<script>
+let DB_KEY='bapp_empire_v4'; let db=JSON.parse(localStorage.getItem(DB_KEY)||'{"stock":[],"sales":[],"exp":[],"cust":[],"you":[],"biz":"BApp"}');
+let custCart=[], youCart=[]; let filterMode='today';
+function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(db)); updDash(); renderAll();}
+function showNotif(m){const n=document.getElementById('notif');n.textContent=m;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),3000);}
+function sh(t){document.querySelectorAll('[id^=tab-]').forEach(e=>e.style.display='none');document.getElementById('tab-'+t).style.display='block';document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById('b-'+t)?.classList.add('active');}
+function setF(m){filterMode=m; document.getElementById('gInfo').textContent=m==='today'?'Today filter':'All filter'; renderAll(); showNotif(m==='today'?'Today':'All Days');}
+function doLogin(){document.getElementById('loginOverlay').style.display='none'; showNotif('Unlocked');}
+function logout(){location.reload();}
+function updDash(){
+ let stockVal=db.stock.reduce((a,b)=>a+(b.qty*b.cost),0);
+ let salesVal=db.sales.reduce((a,b)=>a+b.amt,0);
+ let gross=db.sales.reduce((a,b)=>a+b.profit,0);
+ let expVal=db.exp.reduce((a,b)=>a+b.amt,0);
+ let custVal=db.cust.reduce((a,b)=>a+b.bal,0);
+ let youVal=db.you.reduce((a,b)=>a+b.bal,0);
+ document.getElementById('d-stock').textContent='Le'+stockVal;
+ document.getElementById('d-sales').textContent='Le'+salesVal;
+ document.getElementById('d-gross').textContent='Le'+gross;
+ document.getElementById('d-net').textContent='Le'+(salesVal-expVal);
+ document.getElementById('d-cust').textContent='Le'+custVal;
+ document.getElementById('d-you').textContent='Le'+youVal;
+ document.getElementById('bizH').textContent=db.biz||'BApp';
+}
+function addStock(){
+ let item=document.getElementById('stItem').value.trim(); let qty=parseInt(document.getElementById('stQty').value)||0; let cost=parseFloat(document.getElementById('stCost').value)||0; let sell=parseFloat(document.getElementById('stSell').value)||cost+10; let date=document.getElementById('stDate').value||new Date().toISOString().slice(0,10);
+ if(!item||!qty){alert('Enter Item and Qty');return;}
+ db.stock.push({id:Date.now(),item,qty,cost,sell,date}); saveDB(); document.getElementById('stItem').value=''; document.getElementById('stQty').value=''; showNotif('Stock Added');
+}
+function addSale(){
+ let item=document.getElementById('saItem').value.trim(); let qty=parseInt(document.getElementById('saQty').value)||0; let price=parseFloat(document.getElementById('saPrice').value)||0; let date=document.getElementById('saDate').value||new Date().toISOString().slice(0,10);
+ if(!item||!qty){alert('Enter item qty');return;}
+ let st=db.stock.find(s=>s.item.toLowerCase()===item.toLowerCase()); let profit=0; if(st){ if(st.qty<qty){alert('Not enough stock: '+st.qty);return;} st.qty-=qty; profit=qty*(price - st.cost); } else { profit=qty*10; }
+ db.sales.push({id:Date.now(),date,item,qty,price,amt:qty*price,profit}); saveDB(); showNotif('Sale Added');
+}
+function addExp(){ let name=document.getElementById('exName').value.trim()||'Expense'; let amt=parseFloat(document.getElementById('exAmt').value)||0; let date=document.getElementById('exDate').value||new Date().toISOString().slice(0,10); if(!amt){alert('Enter amount');return;} db.exp.push({id:Date.now(),date,name,amt}); saveDB(); showNotif('Expense Added'); }
+
+// === CUSTOMER FIXED ===
+function addCustLine(){
+ let item=document.getElementById('cuBItem').value.trim(); let qty=parseInt(document.getElementById('cuBQty').value)||0; let price=parseFloat(document.getElementById('cuBPrice').value)||0;
+ if(!item||!qty||!price){alert('Enter Item, Qty, Price each');return;}
+ custCart.push({item,qty,price,amt:qty*price}); renderCustBuilder();
+ document.getElementById('cuBItem').value=''; document.getElementById('cuBQty').value=''; document.getElementById('cuBPrice').value='';
+}
+function renderCustBuilder(){
+ let body=document.getElementById('custBuilderTable'); let total=0;
+ if(!custCart.length){body.innerHTML='<tr><td>No items yet</td></tr>'; document.getElementById('custBuilderTotal').textContent='Total: Le 0'; document.getElementById('cuTotal').value=0; return;}
+ body.innerHTML='<tr><th>Item</th><th>Qty</th><th>Price</th><th>Amt</th><th>Del</th></tr>'+custCart.map((c,i)=>{total+=c.amt; return `<tr><td>${c.item}</td><td>${c.qty}</td><td>Le ${c.price}</td><td>Le ${c.amt}</td><td><button onclick="custCart.splice(${i},1);renderCustBuilder()" style="background:red;color:#fff;border:none;padding:3px 6px;border-radius:4px">X</button></td></tr>`}).join('');
+ document.getElementById('custBuilderTotal').textContent='Total: Le '+total;
+ document.getElementById('cuTotal').value=total;
+}
+function addCust(){
+ let name=document.getElementById('cuName').value.trim();
+ if(!name) name='Unknown Customer';
+ if(custCart.length===0){alert('Boss! Add at least one item. Enter Item, Qty, Price then click + Add Item to List');return;}
+ let total=parseFloat(document.getElementById('cuTotal').value)||custCart.reduce((a,b)=>a+b.amt,0);
+ let paid=parseFloat(document.getElementById('cuPaid').value)||0;
+ let bal=total-paid;
+ let phone=document.getElementById('cuPhone').value.trim()||'N/A';
+ let taken=document.getElementById('cuTaken').value||new Date().toISOString().slice(0,10);
+ let payDate=document.getElementById('cuPayDate').value||new Date().toISOString().slice(0,10);
+ let items=custCart.map(c=>`${c.item} x${c.qty}`).join(', ');
+ db.cust.push({id:Date.now(),name,items,cart:[...custCart],total,paid,bal,phone,taken,payDate,date:taken});
+ custCart=[]; renderCustBuilder();
+ document.getElementById('cuName').value=''; document.getElementById('cuPaid').value=''; document.getElementById('cuPhone').value=''; document.getElementById('cuTotal').value='';
+ saveDB(); showNotif('✅ Cust Debt Saved: '+name);
+}
+function renderCust(){
+ let t=document.getElementById('custTable');
+ if(!db.cust.length){t.innerHTML='<tr><td>No debts</td></tr>';return;}
+ t.innerHTML='<tr><th>Name</th><th>Items</th><th>Total</th><th>Paid</th><th>Bal</th><th>Phone</th><th>Taken</th><th>Pay Date</th><th>Act</th></tr>'+db.cust.map(d=>`<tr><td>${d.name}</td><td>${d.items}</td><td>Le${d.total}</td><td>Le${d.paid}</td><td>Le${d.bal}</td><td>${d.phone}</td><td>${d.taken}</td><td>${d.payDate}</td><td><button onclick="delCust(${d.id})" style="background:red;color:#fff;border:none;padding:3px">X</button></td></tr>`).join('');
+}
+function delCust(id){db.cust=db.cust.filter(d=>d.id!=id); saveDB();}
+
+// === SUPPLIER FIXED ===
+function addYouLine(){
+ let item=document.getElementById('yoBItem').value.trim(); let qty=parseInt(document.getElementById('yoBQty').value)||0; let price=parseFloat(document.getElementById('yoBPrice').value)||0;
+ if(!item||!qty||!price){alert('Enter Item, Qty, Price each');return;}
+ youCart.push({item,qty,price,amt:qty*price}); renderYouBuilder();
+ document.getElementById('yoBItem').value=''; document.getElementById('yoBQty').value=''; document.getElementById('yoBPrice').value='';
+}
+function renderYouBuilder(){
+ let body=document.getElementById('youBuilderTable'); let total=0;
+ if(!youCart.length){body.innerHTML='<tr><td>No items yet</td></tr>'; document.getElementById('youBuilderTotal').textContent='Total: Le 0'; document.getElementById('yoTotal').value=0; return;}
+ body.innerHTML='<tr><th>Item</th><th>Qty</th><th>Price</th><th>Amt</th><th>Del</th></tr>'+youCart.map((c,i)=>{total+=c.amt; return `<tr><td>${c.item}</td><td>${c.qty}</td><td>Le ${c.price}</td><td>Le ${c.amt}</td><td><button onclick="youCart.splice(${i},1);renderYouBuilder()" style="background:red;color:#fff;border:none;padding:3px 6px;border-radius:4px">X</button></td></tr>`}).join('');
+ document.getElementById('youBuilderTotal').textContent='Total: Le '+total;
+ document.getElementById('yoTotal').value=total;
+}
+function addYou(){
+ let name=document.getElementById('yoName').value.trim();
+ if(!name) name='Unknown Supplier';
+ if(youCart.length===0){alert('Boss! Add at least one item. Enter Item, Qty, Price then click + Add Item to List');return;}
+ let total=parseFloat(document.getElementById('yoTotal').value)||youCart.reduce((a,b)=>a+b.amt,0);
+ let paid=parseFloat(document.getElementById('yoPaid').value)||0;
+ let bal=total-paid;
+ let date=document.getElementById('yoDate').value||new Date().toISOString().slice(0,10);
+ let items=youCart.map(c=>`${c.item} x${c.qty}`).join(', ');
+ db.you.push({id:Date.now(),name,items,cart:[...youCart],total,paid,bal,date});
+ youCart=[]; renderYouBuilder();
+ document.getElementById('yoName').value=''; document.getElementById('yoPaid').value=''; document.getElementById('yoTotal').value='';
+ saveDB(); showNotif('✅ Supplier Saved: '+name);
+}
+  function renderYou(){
+ let t=document.getElementById('youTable');
+ if(!db.you.length){t.innerHTML='<tr><td>No suppliers</td></tr>';return;}
+ t.innerHTML='<tr><th>Supplier</th><th>Items</th><th>Total</th><th>Paid</th><th>Bal</th><th>Date</th><th>Act</th></tr>'+db.you.map(d=>`<tr><td>${d.name}</td><td>${d.items}</td><td>Le${d.total}</td><td>Le${d.paid}</td><td>Le${d.bal}</td><td>${d.date}</td><td><button onclick="delYou(${d.id})" style="background:red;color:#fff;border:none;padding:3px">X</button></td></tr>`).join('');
+}
+function delYou(id){db.you=db.you.filter(d=>d.id!=id); saveDB();}
+
+function renderStock(){let t=document.getElementById('stockTable'); if(!db.stock.length){t.innerHTML='<tr><td>No stock</td></tr>';return;} t.innerHTML='<tr><th>Item</th><th>Qty</th><th>Cost</th><th>Sell</th><th>Date</th></tr>'+db.stock.map(s=>`<tr><td>${s.item}</td><td>${s.qty}</td><td>Le${s.cost}</td><td>Le${s.sell}</td><td>${s.date}</td></tr>`).join('');}
+function renderSales(){let t=document.getElementById('salesTable'); if(!db.sales.length){t.innerHTML='<tr><td>No sales</td></tr>';return;} t.innerHTML='<tr><th>Date</th><th>Item</th><th>Qty</th><th>Amt</th><th>Profit</th></tr>'+db.sales.map(s=>`<tr><td>${s.date}</td><td>${s.item}</td><td>${s.qty}</td><td>Le${s.amt}</td><td>Le${s.profit}</td></tr>`).join('');}
+function renderExp(){let t=document.getElementById('expTable'); if(!db.exp.length){t.innerHTML='<tr><td>No exp</td></tr>';return;} t.innerHTML='<tr><th>Date</th><th>Exp</th><th>Amt</th></tr>'+db.exp.map(e=>`<tr><td>${e.date}</td><td>${e.name}</td><td>Le${e.amt}</td></tr>`).join('');}
+function renderAll(){renderStock();renderSales();renderExp();renderCust();renderYou();renderCustBuilder();renderYouBuilder();updDash();}
+function saveBCust(){let n=document.getElementById('bizInCust').value.trim(); if(n){db.biz=n; saveDB(); showNotif('Business Name Saved: '+n);} }
+function saveB(){let n=document.getElementById('bizIn').value.trim(); if(n){db.biz=n; saveDB(); showNotif('Saved: '+n);} }
+function clearAll(){if(confirm('Clear all data?')){localStorage.removeItem(DB_KEY); location.reload();}}
+function makeR(mode){let area=document.getElementById('reportArea'); let date=document.getElementById('gDate').value; let sales=mode==='today'?db.sales.filter(s=>s.date===date):db.sales; let exp=mode==='today'?db.exp.filter(s=>s.date===date):db.exp; let cust=mode==='today'?db.cust.filter(s=>s.date===date||s.taken===date):db.cust; let you=mode==='today'?db.you.filter(s=>s.date===date):db.you; let html=`<h3>Report ${mode} - ${date}</h3><p>Sales: Le${sales.reduce((a,b)=>a+b.amt,0)} | Exp: Le${exp.reduce((a,b)=>a+b.amt,0)} | Cust Bal: Le${cust.reduce((a,b)=>a+b.bal,0)} | Supp Bal: Le${you.reduce((a,b)=>a+b.bal,0)}</p><h4>Sales</h4><table class="rtable"><tr><th>Date</th><th class="rItems">Item</th><th>Qty</th><th>Amt</th></tr>${sales.map(s=>`<tr><td>${s.date}</td><td class="rItems">${s.item}</td><td>${s.qty}</td><td>Le${s.amt}</td></tr>`).join('')}</table><h4>Customer Debts</h4><table class="rtable"><tr><th>Name</th><th class="rItems">Items</th><th>Total</th><th>Bal</th></tr>${cust.map(c=>`<tr><td>${c.name}</td><td class="rItems">${c.items}</td><td>Le${c.total}</td><td>Le${c.bal}</td></tr>`).join('')}</table><h4>Supplier</h4><table class="rtable"><tr><th>Supplier</th><th class="rItems">Items</th><th>Total</th><th>Bal</th></tr>${you.map(c=>`<tr><td>${c.name}</td><td class="rItems">${c.items}</td><td>Le${c.total}</td><td>Le${c.bal}</td></tr>`).join('')}</table>`; area.innerHTML=html;}
+function printR(){window.print();}
+document.getElementById('gDate').valueAsDate=new Date(); ['stDate','saDate','exDate','cuTaken','cuPayDate','yoDate'].forEach(id=>{let el=document.getElementById(id); if(el) el.valueAsDate=new Date();}); renderAll(); updDash();
+</script></body></html>
