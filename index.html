@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>BApp V3.2 SECURE - WhatsApp Auto</title><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#0f0f0f;color:#fff;min-height:100vh}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#ff6600);padding:20px}
+.login-card{background:#fff;color:#000;width:100%;max-width:440px;border-radius:20px;padding:28px}
+.logo{text-align:center}.logo h1{color:#ff6600;font-size:28px;font-weight:900}
+.orange-box{background:#ff6600;color:#fff;padding:14px;border-radius:12px;text-align:center;margin:12px 0;font-weight:700}
+.input{width:100%;padding:12px;border:2px solid #eee;border-radius:10px;margin:6px 0;font-size:14px;background:#fff;color:#000}
+.btn{width:100%;padding:12px;background:#ff6600;color:#fff;border:none;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px}
+.btn-black{background:#000}.btn-green{background:#16a34a}
+.app{display:none;min-height:100vh;background:#f5f5f5;color:#000}
+.header{background:#ff6600;color:#fff;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.card{background:#fff;border-radius:12px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card h3{font-size:11px;color:#666}.card b{font-size:16px;display:block}.full{grid-column:1/3}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:5px 0 3px;border-top:1px solid #eee;overflow:auto;z-index:20}
+.nav button{border:none;background:none;font-size:8px;color:#999;text-align:center;flex:1;min-width:40px}.nav button.active{color:#ff6600}.nav button span{display:block;font-size:16px}
+.page{padding-bottom:90px}table{width:100%;border-collapse:collapse;margin-top:6px;font-size:10px}th,td{padding:6px;text-align:left;border-bottom:1px solid #eee;word-break:break-word}th{background:#ff6600;color:#fff;font-size:9px}
+.hidden{display:none!important}.payBtn{background:#22c55e;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700}.delBtn{background:#ef4444;color:#fff;border:none;padding:4px 6px;border-radius:6px;font-size:10px}
+.subCard{background:#fff;border:1px solid #eee;border-radius:12px;padding:12px;margin:8px 0;color:#000}
+.dateFilterBar{background:#000;color:#fff;padding:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;position:sticky;top:50px;z-index:9}
+.whatsBtn{background:#25D366;color:#fff;padding:3px 6px;border-radius:6px;text-decoration:none;font-size:10px}
+@media print{.nav,.header,.dateFilterBar,.noPrint{display:none!important}}
+</style></head><body>
+<div id="loginPage" class="login-wrap"><div class="login-card"><div class="logo"><h1>💰 BApp V3.2 SECURE</h1><p>BUSINESS EMPIRE PRO</p></div><div class="orange-box">💳 Pay With Orange Money<br><b style="font-size:22px">072039074</b><br><small>Issa Koroma</small><br><small>Le300 = 1 Month</small></div><input id="phone" class="input" placeholder="Phone"><input id="code" class="input" type="password" placeholder="CODE"><button class="btn" onclick="login()">🔓 UNLOCK APP</button><div style="background:#f0f9ff;padding:10px;border-radius:10px;margin-top:12px;font-size:11px;text-align:center">1. Pay Orange Money <b>072039074</b><br>2. WhatsApp to <b>072641385</b><br>3. Admin will send CODE via WhatsApp!</div><a href="https://wa.me/232072641385" target="_blank" style="display:block;text-align:center;background:#25D366;color:#fff;padding:12px;border-radius:10px;margin-top:10px;text-decoration:none;font-weight:bold">📲 WhatsApp: 072641385</a><div id="loginMsg" style="margin-top:10px;color:red;text-align:center;font-size:12px;white-space:pre-line"></div></div></div>
+
+<div id="appPage" class="app">
+<div class="header"><div><b id="bizName">BUSINESS EMPIRE</b><br><small id="expiryInfo">Pro Active</small><small id="viewDateInfo"></small></div><div onclick="logout()" style="background:#000;color:#fff;padding:5px 10px;border-radius:20px;font-size:10px;cursor:pointer">LOGOUT</div></div>
+
+<div class="dateFilterBar noPrint">
+<span style="font-size:12px;font-weight:bold">📅 View Date:</span>
+<input id="globalDateFilter" type="date" class="input" style="margin:0;padding:8px;background:#fff;color:#000" onchange="applyDateFilter()">
+<button class="btn" style="width:auto;padding:8px 12px;margin:0;background:#ff6600" onclick="setTodayFilter()">Today</button>
+<button class="btn" style="width:auto;padding:8px 12px;margin:0;background:#16a34a" onclick="printFiltered()">🖨️ Print This Date Only</button>
+</div>
+
+<div id="dashPage" class="page">
+<div class="grid">
+<div class="card"><h3>SALES (FILTERED DATE)</h3><b id="todaySales">Le 0</b><small id="salesDateLabel" style="font-size:9px;color:#666"></small></div>
+<div class="card"><h3>STOCK VALUE (Left Now)</h3><b id="stockValue">Le 0</b></div>
+<div class="card"><h3>PROFIT (FILTERED DATE)</h3><b id="totalProfit" style="color:green">Le 0</b></div>
+<div class="card"><h3>LOW STOCK (&lt;5 Left)</h3><b id="lowStock" style="color:red">0</b></div>
+<div class="card"><h3>CUSTOMER BAL LEFT (FILTERED)</h3><b id="custBal" style="color:red">Le 0</b></div>
+<div class="card"><h3>SUPPLIER BAL LEFT (FILTERED)</h3><b id="youBal" style="color:red">Le 0</b></div>
+<div class="card"><h3>EXPENSES (FILTERED DATE)</h3><b id="expToday" style="color:red">Le 0</b></div>
+<div class="card"><h3>NET PROFIT (FILTERED)</h3><b id="netProfit">Le 0</b></div>
+<div class="card full"><h3>📊 Shop Record - All Transactions For Selected Date</h3><p style="font-size:10px;color:#666">Select 5/10/2026 → see only 5/10/2026. Select 8/10/2026 → see only 8/10/2026. Print only that date!</p><div id="shopRecord" style="margin-top:8px;font-size:11px"></div></div>
+<div class="card full"><h3>Stock Left Status (Qty Added, Left Now, Sold)</h3><div id="stockLeftInfo" style="margin-top:6px;font-size:11px"></div></div>
+<div class="card full"><h3>Recent Sales (Grouped - Same Rice Adds Together)</h3><div id="recentSales" style="margin-top:6px;font-size:11px">No sales yet</div></div>
+</div>
+</div>
+
+<div id="stockPage" class="page hidden"><div style="padding:10px"><h2>📦 Stock - Qty and Left</h2><input id="pName" class="input" placeholder="Product Name (Rice)"><input id="pBuy" class="input" type="number" placeholder="Buying Price"><input id="pSell" class="input" type="number" placeholder="Selling Price"><input id="pQty" class="input" type="number" placeholder="Total Quantity Added (500)"><input id="pDate" class="input" type="date"><button class="btn" onclick="addProduct()">Add Stock</button><div style="margin-top:10px"><label style="font-size:11px">Filter Stock by Date Added:</label><input id="stockDateFilter" type="date" class="input" onchange="renderAll()"></div><table><thead><tr><th>Date Added</th><th>Product</th><th>Qty Added</th><th>Left Now</th><th>Sold</th><th>Profit/unit</th><th>X</th></tr></thead><tbody id="stockTable"></tbody></table><button class="btn btn-black noPrint" onclick="printFilteredTable('stockTable','Stock')">🖨️ Print Stock For Selected Date</button></div></div>
+
+<div id="salesPage" class="page hidden"><div style="padding:10px"><h2>💸 Sell - Total Amount, Qty, Item</h2><select id="saleProduct" class="input"></select><input id="saleQty" class="input" type="number" placeholder="Qty to sell" value="1"><input id="saleDate" class="input" type="date"><div class="card" style="margin:6px 0"><b>Price: <span id="salePrice">Le 0</span></b><br><small>Left after sale: <span id="leftAfter">0</span></small></div><button class="btn" onclick="makeSale()">CONFIRM SALE ✅</button><h3 style="margin-top:12px">Sales For Selected Date - Grouped</h3><table><thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Total Amount</th><th></th></tr></thead><tbody id="salesTable"></tbody></table><button class="btn btn-black noPrint" onclick="printFilteredTable('salesTable','Sales')">🖨️ Print Sales For This Date Only</button></div></div>
+
+<div id="custPage" class="page hidden"><div style="padding:10px"><h2>👥 Customer - WhatsApp + Multiple Items + Date Taken / Pay</h2><input id="cName" class="input" placeholder="Customer Name"><input id="cPhone" class="input" placeholder="WhatsApp Number"><input id="cItems" class="input" placeholder="Items Taken (Multiple: Rice 2 bags, Oil 5L, Sugar 1)"><input id="cTotal" class="input" type="number" placeholder="Total Amount Owe"><input id="cPaid" class="input" type="number" placeholder="Amount Paid Now"><input id="cDateTaken" class="input" type="date"><label style="font-size:11px">Date Pay (when will pay):</label><input id="cDatePay" class="input" type="date"><button class="btn" style="background:#ec4899" onclick="addCustomer()">Add Customer - Balance Left Auto</button><div style="overflow:auto"><table><thead><tr><th>Date Taken</th><th>Name + WhatsApp</th><th>Items (Multiple)</th><th>Total</th><th>Paid</th><th>Bal Left</th><th>Date Pay</th><th>Action</th></tr></thead><tbody id="custTable"></tbody></table></div><button class="btn btn-black noPrint" onclick="printFilteredTable('custTable','Customers')">🖨️ Print Customers For This Date Only</button></div></div>
+
+<div id="youPage" class="page hidden"><div style="padding:10px"><h2>🏭 Supplier - Date Taken & Date Pay + WhatsApp</h2><input id="yName" class="input" placeholder="Supplier Name"><input id="yPhone" class="input" placeholder="WhatsApp"><input id="yItem" class="input" placeholder="Items You Took (Multiple)"><input id="yTotal" class="input" type="number" placeholder="Total You Owe"><input id="yPaid" class="input" type="number" placeholder="Amount You Paid Now"><input id="yDateTaken" class="input" type="date"><label style="font-size:11px">Date Pay:</label><input id="yDatePay" class="input" type="date"><button class="btn" style="background:#f59e0b" onclick="addYou()">Add Supplier - Balance Left</button><table><thead><tr><th>Date Taken</th><th>Supplier + WhatsApp</th><th>Items</th><th>Total</th><th>Paid</th><th>Bal Left</th><th>Date Pay</th><th>Action</th></tr></thead><tbody id="youTable"></tbody></table><button class="btn btn-black noPrint" onclick="printFilteredTable('youTable','Suppliers')">🖨️ Print Suppliers For This Date Only</button></div></div>
+
+<div id="expPage" class="page hidden"><div style="padding:10px"><h2>💸 Expenses - Date Filter + Print Only That Date</h2><input id="eName" class="input" placeholder="Expense"><input id="eAmt" class="input" type="number" placeholder="Amount"><input id="eDate" class="input" type="date"><button class="btn" style="background:#ef4444" onclick="addExp()">Add Expense</button><table><thead><tr><th>Date</th><th>Expense</th><th>Amt</th><th></th></tr></thead><tbody id="expTable"></tbody></table><button class="btn btn-black noPrint" onclick="printFilteredTable('expTable','Expenses')">🖨️ Print Expenses For This Date Only</button></div></div>
+
+<div id="reportPage" class="page hidden"><div style="padding:10px"><h2>📊 Reports - Filter By Date & Print Only That Date</h2><div class="card"><p style="font-size:12px"><b>Current Filter Date:</b> <span id="reportDateLabel"></span><br><small>Change date from top bar, then export/print will be for that date only!</small></p></div><div class="grid" style="padding:0"><div class="card full"><h3>Total Business Value (Left Stock)</h3><b id="rTotal">Le 0</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button class="btn" style="background:#16a34a" onclick="exportCSV('stock')">Export Stock (This Date)</button><button class="btn" style="background:#0891b2" onclick="exportCSV('sales')">Export Sales (This Date)</button><button class="btn" style="background:#ec4899" onclick="exportCSV('cust')">Export Customers (This Date)</button><button class="btn" style="background:#f59e0b" onclick="exportCSV('you')">Export Suppliers (This Date)</button><button class="btn" style="background:#ef4444" onclick="exportCSV('exp')">Export Expenses (This Date)</button><button class="btn btn-black" onclick="exportCSV('all')">Export ALL Shop Record (This Date)</button><button class="btn" style="background:#000" onclick="exportCSV('allDates')">Export ALL Dates (No Filter)</button></div><button class="btn noPrint" style="margin-top:10px;background:#000" onclick="printFiltered()">🖨️ Print Full Shop Record For Selected Date Only</button></div></div>
+
+<div id="settingPage" class="page hidden"><div style="padding:10px"><h2>⚙️ Settings</h2><div class="card"><h3>Business Name</h3><input id="setBizName" class="input"><button class="btn" onclick="saveBizName()">Save</button></div><div class="card"><h3>Orange Money</h3><input id="setOrangeNum" class="input"><input id="setOrangeName" class="input" placeholder="Name"><button class="btn btn-black" onclick="saveOrange()">Save</button></div><div class="card"><h3>App Info V3.2 SECURE</h3><p style="font-size:11px">Secure Admin Panel + WhatsApp Auto Send + Date Filter<br>Orange: 072039074<br>WhatsApp: 072641385<br>Admin: admin / Issa2024! ONLY</p></div><button class="btn" style="background:#666;margin-top:10px" onclick="clearAll()">Clear All Data</button></div></div>
+
+<div id="adminPage" class="page hidden"><div style="padding:10px"><h2>👑 ADMIN PANEL - WHATSAPP AUTO SEND (SECURE - ONLY ADMIN)</h2><div style="background:#25D366;color:#fff;padding:12px;border-radius:10px;text-align:center;font-weight:bold;margin-bottom:10px;font-size:13px">📲 When you Generate Code, it will AUTOMATICALLY open WhatsApp and send CODE to Customer!<br><small>Customer will receive CODE instantly - SECURE, ONLY YOU CAN SEE THIS PAGE</small></div><div style="background:#fff3cd;padding:10px;border-radius:10px;margin:8px 0;font-size:11px;color:#000">Orange: <b>072039074</b> WhatsApp: <b>072641385</b></div><div class="subCard"><p style="color:#ff6600;font-weight:bold;font-size:14px">💰 Generate Code - Le300 / Month + WhatsApp Auto Send</p><input id="genName" class="input" placeholder="Customer Business Name"><input id="genPhone" class="input" placeholder="Customer WhatsApp Phone (e.g. 076123456)"><select id="genMonths" class="input"><option value="1">1 Month - Le300</option><option value="2">2 Months - Le600</option><option value="6">6 Months - Le1800</option><option value="12">12 Months - Le3600</option></select><button class="btn btn-green" onclick="generateCode()" style="font-size:16px;padding:16px">✅ Generate Code + Send WhatsApp</button><div id="genResult" style="margin-top:10px;font-weight:bold;color:#000;background:#fde68a;padding:12px;border-radius:8px;min-height:40px"></div><a id="waSendLink" href="#" target="_blank" style="display:none;background:#25D366;color:#fff;padding:16px;border-radius:12px;text-align:center;text-decoration:none;margin-top:10px;font-weight:bold;font-size:15px;border:3px solid #000">📲 SEND CODE TO CUSTOMER VIA WHATSAPP - CLICK HERE</a></div><h3 style="margin-top:15px">All Paid Subscribers</h3><div style="overflow:auto"><table id="subTable"></table></div></div></div>
+
+<div class="nav"><button id="nDash" class="active" onclick="showPage('dash')"><span>🏠</span>Home</button><button id="nStock" onclick="showPage('stock')"><span>📦</span>Stock</button><button id="nSales" onclick="showPage('sales')"><span>💸</span>Sell</button><button id="nCust" onclick="showPage('cust')"><span>👥</span>Cust</button><button id="nYou" onclick="showPage('you')"><span>🏭</span>Sup</button><button id="nExp" onclick="showPage('exp')"><span>💸</span>Exp</button><button id="nReport" onclick="showPage('report')"><span>📊</span>Export</button><button id="nSet" onclick="showPage('setting')"><span>⚙️</span>Set</button><button id="nAdmin" onclick="showPage('admin')" style="display:none"><span>👑</span>Admin</button></div></div>
+
+<script>
+let products=JSON.parse(localStorage.getItem('bapp_products')||'[]');
+let sales=JSON.parse(localStorage.getItem('bapp_sales')||'[]');
+let customers=JSON.parse(localStorage.getItem('bapp_cust')||'[]');
+let suppliers=JSON.parse(localStorage.getItem('bapp_you')||'[]');
+let expenses=JSON.parse(localStorage.getItem('bapp_exp')||'[]');
+let subs=JSON.parse(localStorage.getItem('bapp_subscribers')||'[]');
+let session=JSON.parse(localStorage.getItem('bapp_session')||'null');
+let bizNameStore=localStorage.getItem('bapp_bizName')||'BUSINESS EMPIRE';
+let orangeNum=localStorage.getItem('bapp_orangeNum')||'072039074';
+let orangeName=localStorage.getItem('bapp_orangeName')||'Issa Koroma';
+let filterDate = new Date().toISOString().split('T')[0];
+
+// SECURE ADMIN CHECK - ONLY ADMIN CAN SEE ADMIN PANEL
+function checkAdminVisible(){
+  let isAdmin = session && session.phone==='admin' && (session.code==='Issa2024!'||session.code==='admin123') && session.isAdmin===true;
+  let btn=document.getElementById('nAdmin');
+  if(isAdmin){
+    btn.style.display='block';
+  } else {
+    btn.style.display='none';
+    // If non-admin is somehow on admin page, kick them out
+    let adminPg=document.getElementById('adminPage');
+    if(adminPg &&!adminPg.classList.contains('hidden')){
+      adminPg.classList.add('hidden');
+      document.getElementById('dashPage').classList.remove('hidden');
+      document.getElementById('nDash').classList.add('active');
+      btn.classList.remove('active');
+    }
+  }
+}
+function login(){
+  let ph=document.getElementById('phone').value.trim();
+  let cd=document.getElementById('code').value.trim();
+  let msg=document.getElementById('loginMsg');
+  if(!ph||!cd){msg.innerText='Enter phone and code';return;}
+  if(ph==='admin'&&(cd==='Issa2024!'||cd==='admin123')){
+    localStorage.setItem('bapp_session',JSON.stringify({phone:ph,code:cd,expiry:'2099-12-31',isAdmin:true}));
+    session={phone:ph,code:cd,isAdmin:true,expiry:'2099-12-31'};
+    showApp();
+    return;
+  }
+  let found=subs.find(s=>s.phone===ph&&s.code===cd);
+  if(!found){msg.innerText='Wrong code! Pay Orange Money '+orangeNum+'\nWhatsApp 072641385';return;}
+  let today=new Date().toISOString().split('T')[0];
+  if(found.expiry<today){msg.innerText='⛔ EXPIRED on '+found.expiry+'! Pay again '+orangeNum+' WhatsApp 072641385';return;}
+  // Customer login - isAdmin FALSE, so they can NEVER see admin panel
+  localStorage.setItem('bapp_session',JSON.stringify({phone:ph,code:cd,expiry:found.expiry,name:found.name,isAdmin:false}));
+  session={phone:ph,code:cd,expiry:found.expiry,name:found.name,isAdmin:false};
+  showApp();
+}
+function showApp(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appPage').style.display='block';
+  document.getElementById('bizName').innerText=bizNameStore;
+  document.getElementById('setBizName').value=bizNameStore;
+  document.getElementById('setOrangeNum').value=orangeNum;
+  document.getElementById('setOrangeName').value=orangeName;
+  let today=new Date().toISOString().split('T')[0];
+  filterDate=today;
+  document.getElementById('globalDateFilter').value=today;
+  document.getElementById('cDateTaken').value=today;
+  document.getElementById('cDatePay').value=today;
+  document.getElementById('yDateTaken').value=today;
+  document.getElementById('yDatePay').value=today;
+  document.getElementById('eDate').value=today;
+  document.getElementById('pDate').value=today;
+  document.getElementById('saleDate').value=today;
+  if(session&&session.expiry)document.getElementById('expiryInfo').innerText='Expires: '+session.expiry;
+  checkAdminVisible();
+  renderAll();
+}
+function logout(){localStorage.removeItem('bapp_session');location.reload();}
+function showPage(p){
+  // SECURITY: Block admin page for customers
+  if(p==='admin'){
+    let isAdmin = session && session.phone==='admin' && (session.code==='Issa2024!'||session.code==='admin123') && session.isAdmin===true;
+    if(!isAdmin){
+      alert('⛔ ACCESS DENIED! Only Admin (Issa) can see Admin Panel!\n\nYou are logged in as Customer: '+(session?session.phone:'')+'\n\nCustomer CANNOT see Admin Panel!');
+      p='dash';
+    }
+  }
+  ['dash','stock','sales','cust','you','exp','report','setting','admin'].forEach(k=>{
+    let pg=document.getElementById(k+'Page');
+    if(pg)pg.classList.add('hidden');
+    let nb=document.getElementById('n'+k.charAt(0).toUpperCase()+k.slice(1));
+    if(nb)nb.classList.remove('active');
+  });
+  document.getElementById(p+'Page').classList.remove('hidden');
+  let nb=document.getElementById('n'+p.charAt(0).toUpperCase()+p.slice(1));
+  if(nb)nb.classList.add('active');
+  if(p==='sales')updateSaleDropdown();
+  if(p==='admin')renderSubs();
+}
+function applyDateFilter(){filterDate=document.getElementById('globalDateFilter').value;renderAll();}
+function setTodayFilter(){let today=new Date().toISOString().split('T')[0];filterDate=today;document.getElementById('globalDateFilter').value=today;renderAll();}
+function save(){localStorage.setItem('bapp_products',JSON.stringify(products));localStorage.setItem('bapp_sales',JSON.stringify(sales));localStorage.setItem('bapp_cust',JSON.stringify(customers));localStorage.setItem('bapp_you',JSON.stringify(suppliers));localStorage.setItem('bapp_exp',JSON.stringify(expenses));}
+function addProduct(){let n=document.getElementById('pName').value;let b=parseFloat(document.getElementById('pBuy').value);let s=parseFloat(document.getElementById('pSell').value);let q=parseInt(document.getElementById('pQty').value);let d=document.getElementById('pDate').value||new Date().toISOString().split('T')[0];if(!n||!b||!s||!q){alert('Fill all');return;}let existing=products.find(p=>p.name.toLowerCase()===n.toLowerCase());if(existing){existing.qty+=q;existing.left+=q;existing.buy=b;existing.sell=s;} else {products.push({id:Date.now(),name:n,buy:b,sell:s,qty:q,left:q,sold:0,dateAdded:d});}save();renderAll();document.getElementById('pName').value='';document.getElementById('pBuy').value='';document.getElementById('pSell').value='';document.getElementById('pQty').value='';alert('Stock Added! Date: '+d);}
+function addCustomer(){let name=document.getElementById('cName').value;let phone=document.getElementById('cPhone').value;let items=document.getElementById('cItems').value;let total=parseFloat(document.getElementById('cTotal').value);let paid=parseFloat(document.getElementById('cPaid').value)||0;let dateTaken=document.getElementById('cDateTaken').value;let datePay=document.getElementById('cDatePay').value;if(!name||!total){alert('Enter name & total');return;}let balance=total-paid;if(balance<0)balance=0;customers.push({id:Date.now(),name,phone,items:items||'N/A',total,paid,balance,dateTaken,datePay});save();renderAll();document.getElementById('cName').value='';document.getElementById('cPhone').value='';document.getElementById('cItems').value='';document.getElementById('cTotal').value='';document.getElementById('cPaid').value='';alert('Customer added! Balance Left: Le'+balance);}
+function addYou(){let name=document.getElementById('yName').value;let phone=document.getElementById('yPhone').value;let items=document.getElementById('yItem').value;let total=parseFloat(document.getElementById('yTotal').value);let paid=parseFloat(document.getElementById('yPaid').value)||0;let dateTaken=document.getElementById('yDateTaken').value;let datePay=document.getElementById('yDatePay').value;if(!name||!total){alert('Enter supplier & total');return;}let balance=total-paid;if(balance<0)balance=0;suppliers.push({id:Date.now(),name,phone,items:items||'N/A',total,paid,balance,dateTaken,datePay});save();renderAll();document.getElementById('yName').value='';document.getElementById('yPhone').value='';document.getElementById('yItem').value='';document.getElementById('yTotal').value='';document.getElementById('yPaid').value='';alert('Supplier added!');}
+function addExp(){let name=document.getElementById('eName').value;let amt=parseFloat(document.getElementById('eAmt').value);let date=document.getElementById('eDate').value||filterDate;if(!name||!amt){alert('Enter expense');return;}expenses.push({id:Date.now(),name,amt,date});save();renderAll();document.getElementById('eName').value='';document.getElementById('eAmt').value='';alert('Expense added for date '+date);}
+function renderAll(){
+let stockDateFilter=document.getElementById('stockDateFilter')?document.getElementById('stockDateFilter').value:null;
+document.getElementById('viewDateInfo').innerText='Viewing: '+filterDate;
+document.getElementById('reportDateLabel').innerText=filterDate;
+document.getElementById('salesDateLabel').innerText='Date: '+filterDate;
+let totalStock=0,low=0;let tbody=document.getElementById('stockTable');tbody.innerHTML='';let leftInfo=document.getElementById('stockLeftInfo');leftInfo.innerHTML='';
+products.forEach((p,i)=>{if(!p.left&&p.left!==0){p.left=p.qty; p.sold=0;} if(!p.dateAdded)p.dateAdded=filterDate; if(stockDateFilter&&p.dateAdded!==stockDateFilter) return; totalStock+=p.buy*(p.left||0); if((p.left||0)<5)low++; tbody.innerHTML+=`<tr><td>${p.dateAdded||''}</td><td><b>${p.name}</b></td><td>${p.qty}</td><td style="color:${p.left<=0?'red':'green'};font-weight:bold">${p.left}</td><td>${p.sold||0}</td><td>Le ${p.sell-p.buy}</td><td><button class="delBtn" onclick="delP(${i})">X</button></td></tr>`; leftInfo.innerHTML+=`<div style="padding:4px 0;border-bottom:1px solid #eee"><b>${p.name}</b>: Qty ${p.qty} | Sold ${p.sold||0} | <span style="color:${p.left<=0?'red':'green'}">Left ${p.left}</span> | Added ${p.dateAdded}</div>`;});
+document.getElementById('stockValue').innerText='Le '+totalStock.toLocaleString();document.getElementById('lowStock').innerText=low+' Items';document.getElementById('rTotal').innerText='Le '+totalStock.toLocaleString();
+let grouped={};let salesFiltered=sales.filter(s=>s.date===filterDate);
+salesFiltered.forEach(s=>{if(!grouped[s.name])grouped[s.name]={qty:0,total:0,sell:s.sell,buy:s.buy}; grouped[s.name].qty+=s.qty; grouped[s.name].total+=s.total;});
+let todayTotal=0,profit=0;Object.values(grouped).forEach(g=>{todayTotal+=g.total; profit+=(g.sell-g.buy)*g.qty;});
+let recent=document.getElementById('recentSales');recent.innerHTML='';Object.entries(grouped).forEach(([name,g])=>{recent.innerHTML+=`<div style="padding:6px 0;border-bottom:1px solid #eee"><b>${name}</b> x${g.qty} - Le ${g.total} on ${filterDate}</div>`;});
+if(Object.keys(grouped).length==0)recent.innerHTML='No sales on '+filterDate;
+document.getElementById('todaySales').innerText='Le '+todayTotal.toLocaleString();
+let custFiltered=customers.filter(c=>c.dateTaken===filterDate);
+let custBalTot=custFiltered.reduce((a,b)=>a+b.balance,0);
+let youFiltered=suppliers.filter(c=>c.dateTaken===filterDate);
+let youBalTot=youFiltered.reduce((a,b)=>a+b.balance,0);
+let expFiltered=expenses.filter(e=>e.date===filterDate);
+let expTodayTot=expFiltered.reduce((a,b)=>a+b.amt,0);
+document.getElementById('totalProfit').innerText='Le '+profit.toLocaleString();document.getElementById('custBal').innerText='Le '+custBalTot.toLocaleString();document.getElementById('youBal').innerText='Le '+youBalTot.toLocaleString();document.getElementById('expToday').innerText='Le '+expTodayTot.toLocaleString();document.getElementById('netProfit').innerText='Le '+(profit-expTodayTot).toLocaleString();
+let shopRecord=document.getElementById('shopRecord');
+shopRecord.innerHTML=`<b>Date: ${filterDate}</b><br>Sales: Le ${todayTotal.toLocaleString()} (${salesFiltered.length} transactions)<br>Customers: ${custFiltered.length} | Bal Left: Le ${custBalTot.toLocaleString()}<br>Suppliers: ${youFiltered.length} | Bal Left: Le ${youBalTot.toLocaleString()}<br>Expenses: Le ${expTodayTot.toLocaleString()}<br>Profit: Le ${profit.toLocaleString()} | Net: Le ${(profit-expTodayTot).toLocaleString()}<br><br><button class="btn" style="background:#000;width:auto;padding:6px 12px" onclick="printFiltered()">Print Shop Record for ${filterDate} Only</button>`;
+let sTbody=document.getElementById('salesTable');sTbody.innerHTML='';Object.entries(grouped).forEach(([name,g])=>{sTbody.innerHTML+=`<tr><td>${filterDate}</td><td><b>${name}</b></td><td>${g.qty}</td><td>Le ${g.total}</td><td><button class="delBtn" onclick="delGroupedSale('${name}')">X</button></td></tr>`;});if(Object.keys(grouped).length==0){sTbody.innerHTML='<tr><td colspan=5>No sales on '+filterDate+'</td></tr>';}
+let cTbody=document.getElementById('custTable');cTbody.innerHTML='';custFiltered.forEach((c)=>{let origIndex=customers.indexOf(c); let waLink=c.phone?`https://wa.me/${c.phone.replace(/[^0-9]/g,'')}`: '#'; cTbody.innerHTML+=`<tr><td>${c.dateTaken}</td><td><b>${c.name}</b><br><a class="whatsBtn" href="${waLink}" target="_blank">${c.phone||''}</a></td><td><small>${c.items}</small></td><td>Le ${c.total.toLocaleString()}</td><td style="color:green">Le ${c.paid.toLocaleString()}</td><td style="color:${c.balance<=0?'green':'red'};font-weight:bold">Le ${c.balance.toLocaleString()}</td><td>${c.datePay}</td><td><button class="payBtn" onclick="payCust(${origIndex})">Pay</button><br><button class="delBtn" style="margin-top:4px" onclick="delCust(${origIndex})">Del</button></td></tr>`;});
+if(custFiltered.length==0){cTbody.innerHTML='<tr><td colspan=8>No customers on '+filterDate+'</td></tr>';}
+let yTbody=document.getElementById('youTable');yTbody.innerHTML='';youFiltered.forEach((c)=>{let origIndex=suppliers.indexOf(c); let waLink=c.phone?`https://wa.me/${c.phone.replace(/[^0-9]/g,'')}`: '#'; yTbody.innerHTML+=`<tr><td>${c.dateTaken}</td><td><b>${c.name}</b><br><a class="whatsBtn" href="${waLink}" target="_blank">${c.phone||''}</a></td><td><small>${c.items}</small></td><td>Le ${c.total.toLocaleString()}</td><td style="color:green">Le ${c.paid.toLocaleString()}</td><td style="color:${c.balance<=0?'green':'red'};font-weight:bold">Le ${c.balance.toLocaleString()}</td><td>${c.datePay}</td><td><button class="payBtn" onclick="payYou(${origIndex})">Pay</button><br><button class="delBtn" style="margin-top:4px" onclick="delYou(${origIndex})">Del</button></td></tr>`;});
+if(youFiltered.length==0){yTbody.innerHTML='<tr><td colspan=8>No suppliers on '+filterDate+'</td></tr>';}
+let eTbody=document.getElementById('expTable');eTbody.innerHTML='';expFiltered.forEach((e)=>{let origIndex=expenses.indexOf(e); eTbody.innerHTML+=`<tr><td>${e.date}</td><td>${e.name}</td><td>Le ${e.amt}</td><td><button class="delBtn" onclick="delExp(${origIndex})">X</button></td></tr>`;});
+if(expFiltered.length==0){eTbody.innerHTML='<tr><td colspan=4>No expenses on '+filterDate+'</td></tr>';}
+renderSubs();
+}
+function delP(i){if(confirm('Delete product?')){products.splice(i,1);save();renderAll();}}
+function delCust(i){if(confirm('Delete customer?')){customers.splice(i,1);save();renderAll();}}
+function delYou(i){if(confirm('Delete supplier?')){suppliers.splice(i,1);save();renderAll();}}
+function delExp(i){if(confirm('Delete expense?')){expenses.splice(i,1);save();renderAll();}}
+function delGroupedSale(name){if(confirm('Delete all sales of '+name+' on '+filterDate+'? This will return qty to stock!')){let removed=sales.filter(s=>s.date===filterDate&&s.name===name);let totalQty=removed.reduce((a,b)=>a+b.qty,0);let prod=products.find(p=>p.name===name);if(prod){prod.left+=totalQty; prod.sold-=totalQty; if(prod.sold<0)prod.sold=0;} sales=sales.filter(s=>!(s.date===filterDate&&s.name===name)); save();renderAll();}}
+function payCust(i){let c=customers[i];let amt=parseFloat(prompt(`CUSTOMER: ${c.name}\nItems: ${c.items}\nTotal: Le ${c.total}\nPaid: Le ${c.paid}\nBalance Left: Le ${c.balance}\nDate Taken: ${c.dateTaken}\nDate Pay: ${c.datePay}\n\nEnter amount he paid now:`));if(!amt) return;c.paid+=amt;c.balance=c.total-c.paid;if(c.balance<0)c.balance=0;save();renderAll();alert(`Paid Le ${amt}\nBalance Left: Le ${c.balance}`);}
+function payYou(i){let s=suppliers[i];let amt=parseFloat(prompt(`SUPPLIER: ${s.name}\nItems: ${s.items}\nTotal You Owe: Le ${s.total}\nPaid: Le ${s.paid}\nBalance Left: Le ${s.balance}\n\nEnter amount you paid now:`));if(!amt) return;s.paid+=amt;s.balance=s.total-s.paid;if(s.balance<0)s.balance=0;save();renderAll();alert(`You Paid Le ${amt}\nBalance Left: Le ${s.balance}`);}
+function updateSaleDropdown(){let sel=document.getElementById('saleProduct');sel.innerHTML='';products.forEach((p,i)=>{if((p.left||0)>0)sel.innerHTML+=`<option value="${i}">${p.name} - Left ${p.left} - Le ${p.sell}</option>`;});sel.onchange=calcPrice;document.getElementById('saleQty').oninput=calcPrice;calcPrice();}
+function calcPrice(){let idx=document.getElementById('saleProduct').value;let qty=parseInt(document.getElementById('saleQty').value)||0;if(products[idx]){document.getElementById('salePrice').innerText='Le '+(products[idx].sell*qty); document.getElementById('leftAfter').innerText=(products[idx].left-qty)+' left';}}
+function makeSale(){let idx=document.getElementById('saleProduct').value;let qty=parseInt(document.getElementById('saleQty').value);let saleDateVal=document.getElementById('saleDate').value||filterDate;if(!products[idx]||!qty||qty>products[idx].left){alert('Invalid qty! Left only '+(products[idx]?products[idx].left:0));return;}let p=products[idx];p.left-=qty;p.sold=(p.sold||0)+qty;sales.push({name:p.name,qty:qty,total:p.sell*qty,buy:p.buy,sell:p.sell,date:saleDateVal,time:Date.now()});save();renderAll();alert('Sale Done! Le '+(p.sell*qty)+' on '+saleDateVal+' Left now: '+p.left);updateSaleDropdown();}
+function saveBizName(){let v=document.getElementById('setBizName').value.trim();if(!v){alert('Enter name');return;}bizNameStore=v;localStorage.setItem('bapp_bizName',v);document.getElementById('bizName').innerText=v;alert('Saved: '+v);}
+function saveOrange(){let num=document.getElementById('setOrangeNum').value.trim();let name=document.getElementById('setOrangeName').value.trim();if(!num){alert('Enter number');return;}orangeNum=num;orangeName=name||orangeName;localStorage.setItem('bapp_orangeNum',num);localStorage.setItem('bapp_orangeName',name);alert('Saved: '+num);}
+function printFiltered(){let date=filterDate;let custFiltered=customers.filter(c=>c.dateTaken===date);let youFiltered=suppliers.filter(c=>c.dateTaken===date);let salesFiltered=sales.filter(s=>s.date===date);let expFiltered=expenses.filter(e=>e.date===date);let grouped={};salesFiltered.forEach(s=>{if(!grouped[s.name])grouped[s.name]={qty:0,total:0};grouped[s.name].qty+=s.qty;grouped[s.name].total+=s.total;});let win=window.open('','_blank');win.document.write(`<html><head><title>Shop Record - ${date}</title><style>body{font-family:Arial}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #000;padding:6px}th{background:#ff6600;color:#fff}</style></head><body><h2>Shop Record - Date: ${date}</h2><p>Business: ${bizNameStore} | Orange: ${orangeNum}</p><h3>Sales (${date}) - Grouped</h3><table><tr><th>Item</th><th>Qty</th><th>Total</th></tr>${Object.entries(grouped).map(([n,g])=>`<tr><td>${n}</td><td>${g.qty}</td><td>Le ${g.total}</td></tr>`).join('')||'<tr><td colspan=3>No sales</td></tr>'}</table><h3>Customers (${date})</h3><table><tr><th>Name</th><th>WhatsApp</th><th>Items</th><th>Total</th><th>Paid</th><th>Bal Left</th><th>Date Pay</th></tr>${custFiltered.map(c=>`<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.items}</td><td>${c.total}</td><td>${c.paid}</td><td>${c.balance}</td><td>${c.datePay}</td></tr>`).join('')||'<tr><td colspan=7>No customers</td></tr>'}</table><h3>Suppliers (${date})</h3><table><tr><th>Name</th><th>WhatsApp</th><th>Items</th><th>Total</th><th>Paid</th><th>Bal Left</th><th>Date Pay</th></tr>${youFiltered.map(c=>`<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.items}</td><td>${c.total}</td><td>${c.paid}</td><td>${c.balance}</td><td>${c.datePay}</td></tr>`).join('')||'<tr><td colspan=7>No suppliers</td></tr>'}</table><h3>Expenses (${date})</h3><table><tr><th>Date</th><th>Expense</th><th>Amount</th></tr>${expFiltered.map(e=>`<tr><td>${e.date}</td><td>${e.name}</td><td>${e.amt}</td></tr>`).join('')||'<tr><td colspan=3>No expenses</td></tr>'}</table><br><button onclick="window.print()">Print</button></body></html>`);win.document.close();}
+function printFilteredTable(tableId,title){let date=filterDate;let win=window.open('','_blank');win.document.write(`<html><head><title>${title} - ${date}</title><style>table{width:100%;border-collapse:collapse}th,td{border:1px solid #000;padding:6px;font-size:12px}th{background:#ff6600;color:#fff}</style></head><body><h2>${title} - Date: ${date}</h2><table>${document.querySelector('#'+tableId).parentElement.innerHTML}</table><br><button onclick="window.print()">Print ${title} for ${date} Only</button></body></html>`);win.document.close();}
+function exportCSV(type){let csv='';let filename='export.csv';let date=filterDate;let custF=customers.filter(c=>c.dateTaken===date);let youF=suppliers.filter(c=>c.dateTaken===date);let salesF=sales.filter(s=>s.date===date);let expF=expenses.filter(e=>e.date===date);let prodF=document.getElementById('stockDateFilter').value? products.filter(p=>p.dateAdded===document.getElementById('stockDateFilter').value) : products;if(type==='stock'){csv='Date Added,Product,Qty Added,Left Now,Sold,Buy,Sell\n';prodF.forEach(p=>{csv+=`${p.dateAdded||''},${p.name},${p.qty},${p.left},${p.sold||0},${p.buy},${p.sell}\n`;});filename='stock_'+date+'.csv';}if(type==='sales'){csv='Date,Product,Qty,Total\n';let grouped={};salesF.forEach(s=>{if(!grouped[s.name])grouped[s.name]={qty:0,total:0};grouped[s.name].qty+=s.qty;grouped[s.name].total+=s.total;});Object.entries(grouped).forEach(([n,g])=>{csv+=`${date},${n},${g.qty},${g.total}\n`;});filename='sales_'+date+'_grouped.csv';}if(type==='cust'){csv='Date Taken,Name,WhatsApp,Items,Total,Paid,Balance Left,Date Pay\n';custF.forEach(c=>{csv+=`${c.dateTaken},${c.name},${c.phone},"${c.items}",${c.total},${c.paid},${c.balance},${c.datePay}\n`;});filename='customers_'+date+'.csv';}if(type==='you'){csv='Date Taken,Supplier,WhatsApp,Items,Total,Paid,Balance Left,Date Pay\n';youF.forEach(c=>{csv+=`${c.dateTaken},${c.name},${c.phone},"${c.items}",${c.total},${c.paid},${c.balance},${c.datePay}\n`;});filename='suppliers_'+date+'.csv';}if(type==='exp'){csv='Date,Expense,Amount\n';expF.forEach(e=>{csv+=`${e.date},${e.name},${e.amt}\n`;});filename='expenses_'+date+'.csv';}if(type==='all'){csv='Type,Date,Name,WhatsApp,Items,Total,Paid,Balance,Date Pay\n';salesF.forEach(s=>{csv+=`Sale,${s.date},${s.name},,${s.qty} items,${s.total},,\n`;});custF.forEach(c=>{csv+=`Customer,${c.dateTaken},${c.name},${c.phone},"${c.items}",${c.total},${c.paid},${c.balance},${c.datePay}\n`;});youF.forEach(c=>{csv+=`Supplier,${c.dateTaken},${c.name},${c.phone},"${c.items}",${c.total},${c.paid},${c.balance},${c.datePay}\n`;});expF.forEach(e=>{csv+=`Expense,${e.date},${e.name},,${e.amt},,,\n`;});filename='SHOP_RECORD_'+date+'.csv';}if(type==='allDates'){csv='Type,Date,Name,Items,Total,Paid,Balance\n';sales.forEach(s=>{csv+=`Sale,${s.date},${s.name},${s.qty},${s.total},,\n`;});customers.forEach(c=>{csv+=`Customer,${c.dateTaken},${c.name},"${c.items}",${c.total},${c.paid},${c.balance}\n`;});suppliers.forEach(c=>{csv+=`Supplier,${c.dateTaken},${c.name},"${c.items}",${c.total},${c.paid},${c.balance}\n`;});expenses.forEach(e=>{csv+=`Expense,${e.date},${e.name},${e.amt},,\n`;});filename='ALL_DATES_full.csv';}let blob=new Blob([csv],{type:'text/csv'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download=filename;a.click();}
+function clearAll(){if(confirm('Clear ALL data?')){products=[];sales=[];customers=[];suppliers=[];expenses=[];save();renderAll();alert('All cleared!');}}
+function generateCode(){
+  let name=document.getElementById('genName').value.trim();
+  let phone=document.getElementById('genPhone').value.trim();
+  let months=parseInt(document.getElementById('genMonths').value)||1;
+  if(!phone){alert('Enter customer WhatsApp phone!');return;}
+  let code='EMP-'+Math.random().toString(36).substring(2,7).toUpperCase();
+  let d=new Date();d.setDate(d.getDate()+(months*30));
+  let expiry=d.toISOString().split('T')[0];
+  let total=months*300;
+  let existing=subs.find(s=>s.phone===phone);
+  if(existing){existing.code=code;existing.expiry=expiry;existing.months=months;existing.total=total;existing.name=name;existing.date=new Date().toISOString().split('T')[0];}
+  else{subs.push({name,phone,code,expiry,months,total,date:new Date().toISOString().split('T')[0]});}
+  localStorage.setItem('bapp_subscribers',JSON.stringify(subs));
+  let cleanPhone=phone.replace(/[^0-9]/g,'');
+  if(cleanPhone.length<=9){cleanPhone='232'+cleanPhone.slice(-8);}
+  let msg=`✅ *BUSINESS EMPIRE PRO*\n\nHello ${name||'Customer'},\nYour App CODE is Ready!\n\n📱 Phone: ${phone}\n🔑 CODE: ${code}\n📅 Valid: ${months} Month(s)\n💰 Paid: Le${total}\n⏰ Expires: ${expiry}\n\n👉 How to Login:\n1. Open: https://issakoroma.github.io/business-empire-pro/\n2. Enter Phone: ${phone}\n3. Enter CODE: ${code}\n4. Click UNLOCK\n\n💳 Orange Money: ${orangeNum}\n📲 Support: 072641385\n\nThank you!`;
+  document.getElementById('genResult').innerHTML=`✅ CODE GENERATED & READY TO SEND VIA WHATSAPP!<br><br>Business: <b>${name}</b><br>Phone: <b>${phone}</b><br>Code: <b style="font-size:28px;color:#ff6600;background:#fff;padding:6px 10px;border-radius:8px;border:2px dashed #ff6600">${code}</b><br>Months: ${months} - Le${total}<br>Expiry: ${expiry}<br><br><span style="color:green;font-weight:bold">Opening WhatsApp now to send CODE to customer...</span>`;
+  let waLink=`https://wa.me/${cleanPhone}?text=`+encodeURIComponent(msg);
+  let waBtn=document.getElementById('waSendLink');
+  waBtn.href=waLink;
+  waBtn.style.display='block';
+  waBtn.innerText=`📲 SEND CODE ${code} TO ${phone} VIA WHATSAPP - CLICK HERE`;
+  renderSubs();
+  setTimeout(()=>{window.open(waLink,'_blank');},800);
+  alert(`✅ CODE: ${code} for ${phone}\nOpening WhatsApp to send... If WhatsApp didn't open, click the GREEN button below!`);
+}
+function renderSubs(){
+  let h='<tr><th>Name</th><th>Phone</th><th>Code</th><th>Months</th><th>Total</th><th>Expiry</th><th>Status</th><th>Action</th></tr>';
+  let today=new Date().toISOString().split('T')[0];
+  subs.forEach((s,i)=>{
+    let expired=s.expiry<today?'<span style="color:red;font-weight:bold">EXPIRED</span>':'<span style="color:green">ACTIVE</span>';
+    h+=`<tr><td>${s.name||''}</td><td>${s.phone}</td><td><b>${s.code}</b></td><td>${s.months||1}M</td><td>Le${(s.total||300).toLocaleString()}</td><td>${s.expiry}</td><td>${expired}</td><td><button class="delBtn" onclick="delSub(${i})">Del</button> <button class="payBtn" onclick="renewSub(${i})">+30d</button> <button class="payBtn" style="background:#25D366" onclick="resendWA(${i})">WA</button></td></tr>`;
+  });
+  let el=document.getElementById('subTable');
+  if(el)el.innerHTML=h;
+}
+function delSub(i){if(confirm('Delete subscriber?')){subs.splice(i,1);localStorage.setItem('bapp_subscribers',JSON.stringify(subs));renderSubs();}}
+function renewSub(i){let d=new Date();d.setDate(d.getDate()+30);subs[i].expiry=d.toISOString().split('T')[0];localStorage.setItem('bapp_subscribers',JSON.stringify(subs));renderSubs();alert('Renewed! New expiry: '+subs[i].expiry);}
+function resendWA(i){let s=subs[i];let cleanPhone=s.phone.replace(/[^0-9]/g,'');if(cleanPhone.length<=9)cleanPhone='232'+cleanPhone.slice(-8);let msg=`✅ *BUSINESS EMPIRE PRO*\nPhone: ${s.phone}\nCODE: ${s.code}\nExpiry: ${s.expiry}\nLogin: https://issakoroma.github.io/business-empire-pro/\nEnter Phone: ${s.phone}\nEnter CODE: ${s.code}`;window.open(`https://wa.me/${cleanPhone}?text=`+encodeURIComponent(msg),'_blank');}
+if(session){showApp();}
+</script></body></html>
