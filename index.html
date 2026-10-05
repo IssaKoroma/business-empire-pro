@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BApp - BUSINESS EMPIRE PRO</title>
+<meta name="theme-color" content="#ff6600">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#0f0f0f;color:#fff;min-height:100vh}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#ff6600);padding:20px}
+.login-card{background:#fff;color:#000;width:100%;max-width:400px;border-radius:20px;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.logo{text-align:center;margin-bottom:20px}
+.logo h1{color:#ff6600;font-size:28px;font-weight:900}
+.logo p{color:#666;font-size:12px;letter-spacing:2px}
+.orange-box{background:#ff6600;color:#fff;padding:12px;border-radius:10px;text-align:center;margin:15px 0;font-weight:700}
+.input{width:100%;padding:14px;border:2px solid #eee;border-radius:10px;margin:8px 0;font-size:16px}
+.input:focus{border-color:#ff6600;outline:none}
+.btn{width:100%;padding:14px;background:#ff6600;color:#fff;border:none;border-radius:10px;font-weight:800;font-size:16px;cursor:pointer;margin-top:10px}
+.app{display:none;min-height:100vh;background:#f5f5f5;color:#000}
+.header{background:#ff6600;color:#fff;padding:15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px}
+.card{background:#fff;border-radius:15px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.card h3{font-size:13px;color:#666}
+.card b{font-size:20px;display:block;margin-top:5px}
+.full{grid-column:1/3}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #eee}
+.nav button{border:none;background:none;font-size:11px;color:#999;text-align:center}
+.nav button.active{color:#ff6600}
+.nav button span{display:block;font-size:20px}
+.page{padding-bottom:80px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #eee;font-size:13px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="loginPage" class="login-wrap">
+<div class="login-card">
+<div class="logo"><h1>💰 BApp</h1><p>BUSINESS EMPIRE PRO</p></div>
+<div class="orange-box">Orange Money: 072039084<br><small>Issa Koroma</small></div>
+<input id="phone" class="input" placeholder="Phone Number (e.g 076...)">
+<input id="code" class="input" type="password" placeholder="Activation CODE">
+<button class="btn" onclick="login()">LOGIN & ACTIVATE 🚀</button>
+<p style="text-align:center;margin-top:15px;font-size:12px;color:#666">No code? Contact 072039084</p>
+<div id="loginMsg" style="margin-top:10px;color:red;text-align:center;font-size:13px"></div>
+</div>
+</div>
+<div id="appPage" class="app">
+<div class="header"><div><b>BUSINESS EMPIRE</b><br><small>Pro Version Active</small></div><div onclick="logout()" style="background:#000;color:#fff;padding:6px 12px;border-radius:20px;font-size:12px">LOGOUT</div></div>
+<div id="dashPage" class="page">
+<div class="grid">
+<div class="card"><h3>TODAY SALES</h3><b id="todaySales">Le 0</b></div>
+<div class="card"><h3>STOCK VALUE</h3><b id="stockValue">Le 0</b></div>
+<div class="card"><h3>TOTAL PROFIT</h3><b id="totalProfit" style="color:green">Le 0</b></div>
+<div class="card"><h3>LOW STOCK</h3><b id="lowStock" style="color:red">0 Items</b></div>
+<div class="card full"><h3>Quick Actions</h3><div style="display:flex;gap:10px;margin-top:10px"><button class="btn" style="flex:1" onclick="showPage('sales')">+ Sell</button><button class="btn" style="flex:1;background:#000" onclick="showPage('stock')">+ Stock</button></div></div>
+<div class="card full"><h3>Recent Sales</h3><div id="recentSales" style="margin-top:10px;font-size:13px">No sales yet</div></div>
+</div>
+</div>
+<div id="stockPage" class="page hidden"><div style="padding:15px"><h2>📦 Stock Manager</h2><input id="pName" class="input" placeholder="Product Name"><input id="pBuy" class="input" type="number" placeholder="Buying Price"><input id="pSell" class="input" type="number" placeholder="Selling Price"><input id="pQty" class="input" type="number" placeholder="Quantity"><button class="btn" onclick="addProduct()">Add Product</button><table><thead><tr><th>Product</th><th>Qty</th><th>Profit</th><th></th></tr></thead><tbody id="stockTable"></tbody></table></div></div>
+<div id="salesPage" class="page hidden"><div style="padding:15px"><h2>💸 New Sale</h2><select id="saleProduct" class="input"></select><input id="saleQty" class="input" type="number" placeholder="Quantity" value="1"><div class="card" style="margin:10px 0"><b>Price: <span id="salePrice">Le 0</span></b></div><button class="btn" onclick="makeSale()">CONFIRM SALE ✅</button><h3 style="margin-top:20px">Today's Sales</h3><table><thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead><tbody id="salesTable"></tbody></table></div></div>
+<div id="reportPage" class="page hidden"><div style="padding:15px"><h2>📊 Reports</h2><div class="grid" style="padding:0;margin-top:15px"><div class="card full"><h3>Total Business Value</h3><b id="rTotal">Le 0</b></div></div><button class="btn" style="background:#000;margin-top:20px" onclick="clearAll()">Clear All Data</button></div></div>
+<div class="nav"><button id="nDash" class="active" onclick="showPage('dash')"><span>🏠</span>Home</button><button id="nStock" onclick="showPage('stock')"><span>📦</span>Stock</button><button id="nSales" onclick="showPage('sales')"><span>💸</span>Sell</button><button id="nReport" onclick="showPage('report')"><span>📊</span>Report</button></div>
+</div>
+<script>
+let products=JSON.parse(localStorage.getItem('bapp_products')||'[]');
+let sales=JSON.parse(localStorage.getItem('bapp_sales')||'[]');
+let user=localStorage.getItem('bapp_user');
+function login(){let ph=document.getElementById('phone').value.trim();let cd=document.getElementById('code').value.trim();let msg=document.getElementById('loginMsg');if(!ph||!cd){msg.innerText='Enter phone and code';return;}if(cd==='1234'||cd==='BAPP2024'||cd==='072039084'||cd.length>=4){localStorage.setItem('bapp_user',ph);localStorage.setItem('bapp_code',cd);showApp();}else{msg.innerText='Invalid code! Contact 072039084';}}
+function showApp(){document.getElementById('loginPage').style.display='none';document.getElementById('appPage').style.display='block';renderAll();}
+function logout(){localStorage.removeItem('bapp_user');location.reload();}
+function showPage(p){document.getElementById('dashPage').classList.add('hidden');document.getElementById('stockPage').classList.add('hidden');document.getElementById('salesPage').classList.add('hidden');document.getElementById('reportPage').classList.add('hidden');document.getElementById('nDash').classList.remove('active');document.getElementById('nStock').classList.remove('active');document.getElementById('nSales').classList.remove('active');document.getElementById('nReport').classList.remove('active');if(p==='dash'){document.getElementById('dashPage').classList.remove('hidden');document.getElementById('nDash').classList.add('active');}if(p==='stock'){document.getElementById('stockPage').classList.remove('hidden');document.getElementById('nStock').classList.add('active');}if(p==='sales'){document.getElementById('salesPage').classList.remove('hidden');document.getElementById('nSales').classList.add('active');updateSaleDropdown();}if(p==='report'){document.getElementById('reportPage').classList.remove('hidden');document.getElementById('nReport').classList.add('active');}}
+function addProduct(){let n=document.getElementById('pName').value;let b=parseFloat(document.getElementById('pBuy').value);let s=parseFloat(document.getElementById('pSell').value);let q=parseInt(document.getElementById('pQty').value);if(!n||!b||!s||!q){alert('Fill all');return;}products.push({id:Date.now(),name:n,buy:b,sell:s,qty:q});save();renderAll();document.getElementById('pName').value='';document.getElementById('pBuy').value='';document.getElementById('pSell').value='';document.getElementById('pQty').value='';alert('Added!');}
+function save(){localStorage.setItem('bapp_products',JSON.stringify(products));localStorage.setItem('bapp_sales',JSON.stringify(sales));}
+function renderAll(){let totalStock=0,low=0;let tbody=document.getElementById('stockTable');tbody.innerHTML='';products.forEach((p,i)=>{totalStock+=p.buy*p.qty;if(p.qty<5)low++;tbody.innerHTML+=`<tr><td>${p.name}</td><td>${p.qty}</td><td>Le ${p.sell-p.buy}</td><td><button onclick="delP(${i})" style="color:red;border:none;background:none">X</button></td></tr>`;});document.getElementById('stockValue').innerText='Le '+totalStock.toLocaleString();document.getElementById('lowStock').innerText=low+' Items';document.getElementById('rTotal').innerText='Le '+totalStock.toLocaleString();let todayTotal=0,profit=0;let today=new Date().toDateString();let sTbody=document.getElementById('salesTable');sTbody.innerHTML='';let recent=document.getElementById('recentSales');recent.innerHTML='';sales.slice().reverse().slice(0,5).forEach(s=>{if(s.date===today){todayTotal+=s.total;profit+=(s.sell-s.buy)*s.qty;}recent.innerHTML+=`<div style="padding:6px 0;border-bottom:1px solid #eee">${s.name} x${s.qty} - Le ${s.total}</div>`;});document.getElementById('todaySales').innerText='Le '+todayTotal.toLocaleString();document.getElementById('totalProfit').innerText='Le '+profit.toLocaleString();sTbody.innerHTML='';sales.filter(s=>s.date===today).forEach(s=>{sTbody.innerHTML+=`<tr><td>${s.name}</td><td>${s.qty}</td><td>Le ${s.total}</td></tr>`;});if(sales.filter(s=>s.date===today).length==0){sTbody.innerHTML='<tr><td colspan=3>No sales today</td></tr>';recent.innerHTML='No sales yet';}}
+function delP(i){if(confirm('Delete?')){products.splice(i,1);save();renderAll();}}
+function updateSaleDropdown(){let sel=document.getElementById('saleProduct');sel.innerHTML='';products.forEach((p,i)=>{if(p.qty>0)sel.innerHTML+=`<option value="${i}">${p.name} - ${p.qty} left - Le ${p.sell}</option>`;});sel.onchange=calcPrice;document.getElementById('saleQty').oninput=calcPrice;calcPrice();}
+function calcPrice(){let idx=document.getElementById('saleProduct').value;let qty=parseInt(document.getElementById('saleQty').value)||0;if(products[idx]){document.getElementById('salePrice').innerText='Le '+(products[idx].sell*qty);}}
+function makeSale(){let idx=document.getElementById('saleProduct').value;let qty=parseInt(document.getElementById('saleQty').value);if(!products[idx]||!qty||qty>products[idx].qty){alert('Invalid qty');return;}let p=products[idx];p.qty-=qty;let total=p.sell*qty;sales.push({name:p.name,qty:qty,total:total,buy:p.buy,sell:p.sell,date:new Date().toDateString(),time:Date.now()});save();renderAll();alert('Sale Done! Le '+total);updateSaleDropdown();}
+function clearAll(){if(confirm('Clear all?')){products=[];sales=[];save();renderAll();}}
+if(user){showApp();}
+</script>
+</body>
+</html>
